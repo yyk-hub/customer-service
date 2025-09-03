@@ -1,10 +1,14 @@
 [
   {
     "question": "How do I get a refund?",
-    "answer": "To request a refund, please contact support with your order ID."
+    "answer": "To request a refund, please contact our support team with your order ID."
   },
   {
     "question": "What are your business hours?",
-    "answer": "Our customer service is available 24/7."
+    "answer": "Our support team is available 24/7 to assist you."
+  },
+  {
+    "question": "Where are you located?",
+    "answer": "We are an online-only service, available worldwide."
   }
 ]
