@@ -2,6 +2,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const fs = require("fs");
 const fetch = require("node-fetch");
+const stringSimilarity = require("string-similarity"); // NEW: fuzzy matching
 
 const app = express();
 const PORT = process.env.PORT || 10000;
@@ -18,12 +19,22 @@ try {
 
 app.use(bodyParser.json());
 
-// Check FAQ first
+// Check FAQ with fuzzy matching
 function checkFAQ(question) {
   if (!faq || faq.length === 0) return null;
-  const q = question.toLowerCase();
-  const match = faq.find(item => q.includes(item.question.toLowerCase()));
-  return match ? match.answer : null;
+
+  const questions = faq.map(item => item.question);
+  const bestMatch = stringSimilarity.findBestMatch(
+    question.toLowerCase(),
+    questions.map(q => q.toLowerCase())
+  );
+
+  if (bestMatch.bestMatch.rating > 0.5) {
+    const matchedIndex = bestMatch.bestMatchIndex;
+    return faq[matchedIndex].answer;
+  }
+
+  return null;
 }
 
 // Call DeepSeek API if not in FAQ
