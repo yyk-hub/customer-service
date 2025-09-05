@@ -6,19 +6,19 @@ const fetch = require("node-fetch");
 const app = express();
 const PORT = process.env.PORT || 10000;
 
-// Load FAQ
+// ===== Load FAQ =====
 let faq = [];
 try {
   const faqData = fs.readFileSync("faq.json", "utf8");
   faq = JSON.parse(faqData);
-  console.log("FAQ loaded:", faq.length, "entries");
+  console.log("✅ FAQ loaded:", faq.length, "entries");
 } catch (err) {
-  console.error("Failed to load faq.json:", err);
+  console.error("⚠️ Failed to load faq.json:", err);
 }
 
 app.use(bodyParser.json());
 
-// Check FAQ first
+// ===== Check FAQ =====
 function checkFAQ(question) {
   if (!faq || faq.length === 0) return null;
   const q = question.toLowerCase();
@@ -26,76 +26,74 @@ function checkFAQ(question) {
   return match ? match.answer : null;
 }
 
-// Call DeepSeek API (text only)
+// ===== Call DeepSeek via OpenRouter =====
 async function callDeepSeek(prompt) {
   const apiKey = process.env.DEEPSEEK_API_KEY;
   if (!apiKey) {
-    console.warn("No DeepSeek API key found, skipping...");
+    console.warn("⚠️ No DeepSeek API key found, skipping...");
     return null;
   }
 
   try {
-    const response = await fetch("https://api.deepseek.com/v1/chat/completions", {
+    const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         "Authorization": `Bearer ${apiKey}`
       },
       body: JSON.stringify({
-        model: "deepseek-chat",
+        model: "deepseek/deepseek-chat",
         messages: [{ role: "user", content: prompt }]
       })
     });
 
     const data = await response.json();
-    console.log("DeepSeek raw response:", data);
+    console.log("📨 DeepSeek raw response:", data);
     return data?.choices?.[0]?.message?.content || null;
   } catch (error) {
-    console.error("DeepSeek API error:", error);
+    console.error("❌ DeepSeek API error:", error);
     return null;
   }
 }
 
-// Call Gemini API (text + image)
+// ===== Call Gemini (Vision) =====
 async function callGemini(prompt, imageUrl) {
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) {
-    console.warn("No Gemini API key found, skipping...");
+    console.warn("⚠️ No Gemini API key found, skipping...");
     return null;
   }
 
   try {
-    const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro-vision:generateContent?key=${apiKey}`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          contents: [
-            {
-              parts: [
-                { text: prompt },
-                ...(imageUrl ? [{ inline_data: { mime_type: "image/jpeg", data: imageUrl } }] : [])
-              ]
-            }
-          ]
-        })
-      }
-    );
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        contents: [
+          {
+            parts: [
+              { text: prompt },
+              { image_url: imageUrl }
+            ]
+          }
+        ]
+      })
+    });
 
     const data = await response.json();
+    console.log("📨 Gemini raw response:", data);
     return data?.candidates?.[0]?.content?.parts?.[0]?.text || null;
   } catch (error) {
-    console.error("Gemini API error:", error);
+    console.error("❌ Gemini API error:", error);
     return null;
   }
 }
 
-// Main chat endpoint
+// ===== Main Chat Endpoint =====
 app.post("/chat", async (req, res) => {
   const { message, imageUrl } = req.body;
   if (!message) {
-    return res.json({ reply: "No message received." });
+    return res.json({ reply: "⚠️ No message received." });
   }
 
   // 1. Try FAQ
@@ -114,10 +112,10 @@ app.post("/chat", async (req, res) => {
   const aiAnswer = await callDeepSeek(message);
   if (aiAnswer) return res.json({ reply: aiAnswer });
 
-  // 4. Fallback
+  // 4. Default fallback
   res.json({ reply: "Sorry, I cannot answer that right now." });
 });
 
 app.listen(PORT, () => {
-  console.log(`Bot running on port ${PORT}`);
+  console.log(`🤖 Bot running on port ${PORT}`);
 });
