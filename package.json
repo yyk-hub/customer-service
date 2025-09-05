@@ -1,15 +1,15 @@
 {
-  "name": "customer-service",
+  "name": "customer-service-bot",
   "version": "1.0.0",
+  "description": "Customer Service Bot with FAQ, DeepSeek, and Gemini support",
   "main": "bot.js",
-  "type": "commonjs",
   "scripts": {
     "start": "node bot.js"
   },
   "dependencies": {
-    "express": "^4.18.2",
+    "express": "^4.19.2",
     "body-parser": "^1.20.2",
-    "node-fetch": "^2.6.7", 
+    "node-fetch": "^2.6.7",
     "string-similarity": "^4.0.4"
   }
 }
