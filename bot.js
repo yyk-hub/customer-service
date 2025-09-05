@@ -1,23 +1,3 @@
-import fetch from "node-fetch";
-
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
-
-// Function to call Gemini
-async function askGemini(prompt) {
-  const url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=" + GEMINI_API_KEY;
-  
-  const response = await fetch(url, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      contents: [{ parts: [{ text: prompt }] }]
-    })
-  });
-
-  const data = await response.json();
-  return data.candidates?.[0]?.content?.parts?.[0]?.text || "No reply from Gemini";
-}
-
 const express = require("express");
 const bodyParser = require("body-parser");
 const fs = require("fs");
@@ -46,25 +26,27 @@ function checkFAQ(question) {
   return match ? match.answer : null;
 }
 
-// Call DeepSeek API (via OpenRouter)
+// Call DeepSeek API (text only)
 async function callDeepSeek(prompt) {
-  const apiKey = process.env.OPENROUTER_API_KEY;
-  if (!apiKey) return null;
+  const apiKey = process.env.DEEPSEEK_API_KEY;
+  if (!apiKey) {
+    console.warn("No DeepSeek API key found, skipping...");
+    return null;
+  }
 
   try {
-    const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+    const response = await fetch("https://api.deepseek.com/v1/chat/completions", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${apiKey}`,
-        "HTTP-Referer": "https://your-app-url.com",
-        "X-Title": "Customer Service Bot"
+        "Authorization": `Bearer ${apiKey}`
       },
       body: JSON.stringify({
-        model: "deepseek/deepseek-r1:free",
+        model: "deepseek-chat",
         messages: [{ role: "user", content: prompt }]
       })
     });
+
     const data = await response.json();
     return data?.choices?.[0]?.message?.content || null;
   } catch (error) {
@@ -73,58 +55,37 @@ async function callDeepSeek(prompt) {
   }
 }
 
-// Call Gemini Vision (via OpenRouter or Google direct)
+// Call Gemini API (text + image)
 async function callGemini(prompt, imageUrl) {
-  // 1. If you have a direct Google Gemini API key
-  if (process.env.GEMINI_API_KEY) {
-    try {
-      const response = await fetch(
-        "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro-vision:generateContent?key=" + process.env.GEMINI_API_KEY,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            contents: [{
-              parts: [
-                { text: prompt },
-                { image_url: { url: imageUrl } }
-              ]
-            }]
-          })
-        }
-      );
-      const data = await response.json();
-      return data?.candidates?.[0]?.content?.parts?.[0]?.text || null;
-    } catch (error) {
-      console.error("Direct Gemini API error:", error);
-    }
+  const apiKey = process.env.GEMINI_API_KEY;
+  if (!apiKey) {
+    console.warn("No Gemini API key found, skipping...");
+    return null;
   }
 
-  // 2. Fallback: Gemini via OpenRouter
-  const apiKey = process.env.OPENROUTER_API_KEY;
-  if (!apiKey) return null;
-
   try {
-    const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${apiKey}`,
-        "HTTP-Referer": "https://your-app-url.com",
-        "X-Title": "Customer Service Bot"
-      },
-      body: JSON.stringify({
-        model: "google/gemini-pro-vision:free",
-        messages: [
-          { role: "user", content: prompt },
-          { role: "user", content: `Image URL: ${imageUrl}` }
-        ]
-      })
-    });
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro-vision:generateContent?key=${apiKey}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          contents: [
+            {
+              parts: [
+                { text: prompt },
+                ...(imageUrl ? [{ inline_data: { mime_type: "image/jpeg", data: imageUrl } }] : [])
+              ]
+            }
+          ]
+        })
+      }
+    );
+
     const data = await response.json();
-    return data?.choices?.[0]?.message?.content || null;
+    return data?.candidates?.[0]?.content?.parts?.[0]?.text || null;
   } catch (error) {
-    console.error("OpenRouter Gemini error:", error);
+    console.error("Gemini API error:", error);
     return null;
   }
 }
