@@ -23,11 +23,22 @@ app.use(bodyParser.json());
 // =======================
 // FAQ checker
 // =======================
+const stringSimilarity = require("string-similarity");
+
+// Check FAQ with fuzzy matching
 function checkFAQ(question) {
   if (!faq || faq.length === 0) return null;
-  const q = question.toLowerCase();
-  const match = faq.find(item => q.includes(item.question.toLowerCase()));
-  return match ? match.answer : null;
+
+  const questions = faq.map(item => item.question);
+  const matches = stringSimilarity.findBestMatch(question.toLowerCase(), questions.map(q => q.toLowerCase()));
+
+  if (matches.bestMatch.rating > 0.5) {
+    const bestQuestion = questions[matches.bestMatchIndex];
+    const matchedFaq = faq.find(item => item.question.toLowerCase() === bestQuestion);
+    return matchedFaq ? matchedFaq.answer : null;
+  }
+
+  return null;
 }
 
 // =======================
