@@ -25,6 +25,9 @@ app.use(bodyParser.json());
 // =======================
 const stringSimilarity = require("string-similarity");
 
+// Read from environment or default to 0.6
+const FAQ_MATCH_THRESHOLD = parseFloat(process.env.FAQ_MATCH_THRESHOLD) || 0.6;
+
 // Check FAQ with fuzzy matching + log
 function checkFAQ(question) {
   if (!faq || faq.length === 0) return null;
@@ -32,7 +35,7 @@ function checkFAQ(question) {
   const questions = faq.map(item => item.question);
   const matches = stringSimilarity.findBestMatch(question.toLowerCase(), questions.map(q => q.toLowerCase()));
 
-  if (matches.bestMatch.rating > 0.5) {
+  if (matches.bestMatch.rating >= FAQ_MATCH_THRESHOLD) {
     const bestQuestion = questions[matches.bestMatchIndex];
     const matchedFaq = faq.find(item => item.question.toLowerCase() === bestQuestion);
 
@@ -41,7 +44,7 @@ function checkFAQ(question) {
     return matchedFaq ? matchedFaq.answer : null;
   }
 
-  console.log(`⚠️ No FAQ match for: "${question}"`);
+  console.log(`⚠️ No FAQ match (score: ${matches.bestMatch.rating.toFixed(2)}) for: "${question}"`);
   return null;
 }
 
