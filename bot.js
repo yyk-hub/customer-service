@@ -25,7 +25,7 @@ app.use(bodyParser.json());
 // =======================
 const stringSimilarity = require("string-similarity");
 
-// Check FAQ with fuzzy matching
+// Check FAQ with fuzzy matching + log
 function checkFAQ(question) {
   if (!faq || faq.length === 0) return null;
 
@@ -35,9 +35,13 @@ function checkFAQ(question) {
   if (matches.bestMatch.rating > 0.5) {
     const bestQuestion = questions[matches.bestMatchIndex];
     const matchedFaq = faq.find(item => item.question.toLowerCase() === bestQuestion);
+
+    console.log(`🔎 FAQ match: "${question}" → "${matchedFaq?.question}" (score: ${matches.bestMatch.rating.toFixed(2)})`);
+
     return matchedFaq ? matchedFaq.answer : null;
   }
 
+  console.log(`⚠️ No FAQ match for: "${question}"`);
   return null;
 }
 
