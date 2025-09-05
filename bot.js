@@ -5,7 +5,6 @@ const fetch = require("node-fetch");
 
 const app = express();
 const PORT = process.env.PORT || 10000;
-
 // Read from environment or default to 0.6
 const FAQ_MATCH_THRESHOLD = parseFloat(process.env.FAQ_MATCH_THRESHOLD) || 0.6;
 
@@ -29,10 +28,6 @@ app.use(bodyParser.json());
 // FAQ checker
 // =======================
 const stringSimilarity = require("string-similarity");
-
-// Read from environment or default to 0.6
-const FAQ_MATCH_THRESHOLD = parseFloat(process.env.FAQ_MATCH_THRESHOLD) || 0.6;
-
 // Check FAQ with fuzzy matching + log
 function checkFAQ(question) {
   if (!faq || faq.length === 0) return null;
