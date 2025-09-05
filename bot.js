@@ -69,7 +69,7 @@ async function callDeepSeek(prompt) {
         "X-Title": "Customer Service Bot" // optional
       },
       body: JSON.stringify({
-        model: "deepseek/deepseek-r1-0528:free",
+        model: "deepseek/deepseek-r1-0528",
         messages: [{ role: "user", content: prompt }]
       })
     });
