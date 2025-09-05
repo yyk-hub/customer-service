@@ -5,11 +5,7 @@ const fetch = require("node-fetch");
 
 const app = express();
 const PORT = process.env.PORT || 10000;
-// Read from environment or default to 0.6
-const FAQ_MATCH_THRESHOLD = parseFloat(process.env.FAQ_MATCH_THRESHOLD) || 0.6;
 
-// Log current FAQ threshold at startup
-console.log(`⚙️ Using FAQ_MATCH_THRESHOLD = ${FAQ_MATCH_THRESHOLD}`);
 // =======================
 // Load FAQ
 // =======================
