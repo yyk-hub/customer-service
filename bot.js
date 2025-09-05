@@ -6,19 +6,23 @@ const fetch = require("node-fetch");
 const app = express();
 const PORT = process.env.PORT || 10000;
 
-// ===== Load FAQ =====
+// =======================
+// Load FAQ
+// =======================
 let faq = [];
 try {
   const faqData = fs.readFileSync("faq.json", "utf8");
   faq = JSON.parse(faqData);
-  console.log("✅ FAQ loaded:", faq.length, "entries");
+  console.log("FAQ loaded:", faq.length, "entries");
 } catch (err) {
-  console.error("⚠️ Failed to load faq.json:", err);
+  console.error("Failed to load faq.json:", err);
 }
 
 app.use(bodyParser.json());
 
-// ===== Check FAQ =====
+// =======================
+// FAQ checker
+// =======================
 function checkFAQ(question) {
   if (!faq || faq.length === 0) return null;
   const q = question.toLowerCase();
@@ -26,11 +30,13 @@ function checkFAQ(question) {
   return match ? match.answer : null;
 }
 
-// ===== Call DeepSeek via OpenRouter =====
+// =======================
+// DeepSeek via OpenRouter
+// =======================
 async function callDeepSeek(prompt) {
-  const apiKey = process.env.DEEPSEEK_API_KEY;
+  const apiKey = process.env.DEEPSEEK_API_KEY; // OpenRouter key
   if (!apiKey) {
-    console.warn("⚠️ No DeepSeek API key found, skipping...");
+    console.warn("No OpenRouter API key found, skipping...");
     return null;
   }
 
@@ -39,83 +45,95 @@ async function callDeepSeek(prompt) {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${apiKey}`
+        "Authorization": `Bearer ${apiKey}`,
+        "HTTP-Referer": "https://customer-service-qbwg.onrender.com", // optional
+        "X-Title": "Customer Service Bot" // optional
       },
       body: JSON.stringify({
-        model: "deepseek/deepseek-chat",
+        model: "deepseek/deepseek-r1-0528:free",
         messages: [{ role: "user", content: prompt }]
       })
     });
 
     const data = await response.json();
-    console.log("📨 DeepSeek raw response:", data);
+    console.log("DeepSeek raw response:", data);
+
     return data?.choices?.[0]?.message?.content || null;
   } catch (error) {
-    console.error("❌ DeepSeek API error:", error);
+    console.error("DeepSeek API error:", error);
     return null;
   }
 }
 
-// ===== Call Gemini (Vision) =====
+// =======================
+// Gemini Vision (image support)
+// =======================
 async function callGemini(prompt, imageUrl) {
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) {
-    console.warn("⚠️ No Gemini API key found, skipping...");
+    console.warn("No Gemini API key found, skipping...");
     return null;
   }
 
   try {
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        contents: [
-          {
-            parts: [
-              { text: prompt },
-              { image_url: imageUrl }
-            ]
-          }
-        ]
-      })
-    });
+    const response = await fetch(
+      "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" + apiKey,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          contents: [
+            {
+              parts: [
+                { text: prompt },
+                { image_url: imageUrl }
+              ]
+            }
+          ]
+        })
+      }
+    );
 
     const data = await response.json();
-    console.log("📨 Gemini raw response:", data);
+    console.log("Gemini raw response:", data);
+
     return data?.candidates?.[0]?.content?.parts?.[0]?.text || null;
   } catch (error) {
-    console.error("❌ Gemini API error:", error);
+    console.error("Gemini API error:", error);
     return null;
   }
 }
 
-// ===== Main Chat Endpoint =====
+// =======================
+// Main chat endpoint
+// =======================
 app.post("/chat", async (req, res) => {
   const { message, imageUrl } = req.body;
   if (!message) {
-    return res.json({ reply: "⚠️ No message received." });
+    return res.json({ reply: "No message received." });
   }
 
-  // 1. Try FAQ
+  // 1. FAQ
   const faqAnswer = checkFAQ(message);
-  if (faqAnswer) {
-    return res.json({ reply: faqAnswer });
-  }
+  if (faqAnswer) return res.json({ reply: faqAnswer });
 
-  // 2. If image is provided → Gemini
+  // 2. Gemini (if image)
   if (imageUrl) {
     const visionAnswer = await callGemini(message, imageUrl);
     if (visionAnswer) return res.json({ reply: visionAnswer });
   }
 
-  // 3. Otherwise → DeepSeek
+  // 3. DeepSeek (text)
   const aiAnswer = await callDeepSeek(message);
   if (aiAnswer) return res.json({ reply: aiAnswer });
 
-  // 4. Default fallback
+  // 4. Fallback
   res.json({ reply: "Sorry, I cannot answer that right now." });
 });
 
+// =======================
+// Start server
+// =======================
 app.listen(PORT, () => {
-  console.log(`🤖 Bot running on port ${PORT}`);
+  console.log(`Bot running on port ${PORT}`);
 });
