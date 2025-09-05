@@ -48,6 +48,7 @@ async function callDeepSeek(prompt) {
     });
 
     const data = await response.json();
+    console.log("DeepSeek raw response:", data)
     return data?.choices?.[0]?.message?.content || null;
   } catch (error) {
     console.error("DeepSeek API error:", error);
