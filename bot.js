@@ -38,7 +38,7 @@ function checkFAQ(question) {
 
   if (matches.bestMatch.rating >= FAQ_MATCH_THRESHOLD) {
     const bestQuestion = questions[matches.bestMatchIndex];
-    const matchedFaq = faq.find(item => item.question.toLowerCase() === bestQuestion);
+    const matchedFaq = faq[matches.bestMatchIndex];
 
     console.log(`🔎 FAQ match: "${question}" → "${matchedFaq?.question}" (score: ${matches.bestMatch.rating.toFixed(2)})`);
 
