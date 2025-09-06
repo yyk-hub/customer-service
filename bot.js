@@ -11,6 +11,7 @@ const FAQ_MATCH_THRESHOLD = parseFloat(process.env.FAQ_MATCH_THRESHOLD) || 0.6;
 
 // Log current FAQ threshold at startup
 console.log(`⚙️ Using FAQ_MATCH_THRESHOLD = ${FAQ_MATCH_THRESHOLD}`);
+
 // =======================
 // Load FAQ
 // =======================
@@ -29,19 +30,19 @@ app.use(bodyParser.json());
 // FAQ checker
 // =======================
 const stringSimilarity = require("string-similarity");
-// Check FAQ with fuzzy matching + log
+
 function checkFAQ(question) {
   if (!faq || faq.length === 0) return null;
 
   const questions = faq.map(item => item.question);
-  const matches = stringSimilarity.findBestMatch(question.toLowerCase(), questions.map(q => q.toLowerCase()));
+  const matches = stringSimilarity.findBestMatch(
+    question.toLowerCase(),
+    questions.map(q => q.toLowerCase())
+  );
 
   if (matches.bestMatch.rating >= FAQ_MATCH_THRESHOLD) {
-    const bestQuestion = questions[matches.bestMatchIndex];
     const matchedFaq = faq[matches.bestMatchIndex];
-
     console.log(`🔎 FAQ match: "${question}" → "${matchedFaq?.question}" (score: ${matches.bestMatch.rating.toFixed(2)})`);
-
     return matchedFaq ? matchedFaq.answer : null;
   }
 
@@ -50,22 +51,10 @@ function checkFAQ(question) {
 }
 
 // =======================
-// DeepSeek via OpenRouter
+// Llama via OpenRouter (text only)
 // =======================
-async function callDeepSeek(prompt) {
-  const apiKey = process.env.DEEPSEEK_API_KEY;
-  
-  // Add these debug lines:
-  console.log("🔑 API Key exists:", !!apiKey);
-  console.log("🔑 API Key length:", apiKey ? apiKey.length : 0);
-  console.log("🔑 API Key starts with sk-or:", apiKey ? apiKey.startsWith('sk-or') : false);
-  
-  if (!apiKey) {
-    console.warn("No OpenRouter API key found, skipping...");
-    return null;
-  }
-  
-  // OpenRouter key
+async function callLlama(prompt) {
+  const apiKey = process.env.OPENROUTER_API_KEY;
   if (!apiKey) {
     console.warn("No OpenRouter API key found, skipping...");
     return null;
@@ -77,21 +66,21 @@ async function callDeepSeek(prompt) {
       headers: {
         "Content-Type": "application/json",
         "Authorization": `Bearer ${apiKey}`,
-        "HTTP-Referer": "https://customer-service-qbwg.onrender.com", // optional
-        "X-Title": "Customer Service Bot" // optional
+        "HTTP-Referer": "https://customer-service-qbwg.onrender.com",
+        "X-Title": "Customer Service Bot"
       },
       body: JSON.stringify({
-       model: "deepseek/deepseek-chat-v3.1:free",
+        model: "meta-llama/llama-3.3-8b-instruct:free",
         messages: [{ role: "user", content: prompt }]
       })
     });
 
     const data = await response.json();
-    console.log("DeepSeek raw response:", data);
+    console.log("Llama raw response:", data);
 
     return data?.choices?.[0]?.message?.content || null;
   } catch (error) {
-    console.error("DeepSeek API error:", error);
+    console.error("Llama API error:", error);
     return null;
   }
 }
@@ -154,8 +143,8 @@ app.post("/chat", async (req, res) => {
     if (visionAnswer) return res.json({ reply: visionAnswer });
   }
 
-  // 3. DeepSeek (text)
-  const aiAnswer = await callDeepSeek(message);
+  // 3. Llama (text)
+  const aiAnswer = await callLlama(message);
   if (aiAnswer) return res.json({ reply: aiAnswer });
 
   // 4. Fallback
@@ -166,5 +155,5 @@ app.post("/chat", async (req, res) => {
 // Start server
 // =======================
 app.listen(PORT, () => {
-  console.log(`Bot running on port ${PORT}`);
+  console.log(`🤖 Bot running on port ${PORT}`);
 });
