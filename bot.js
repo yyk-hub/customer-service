@@ -78,12 +78,15 @@ function checkFAQ(question) {
 // =======================
 async function callGemini(prompt, imageUrl) {
   const apiKey = process.env.GEMINI_API_KEY;
+console.log("🔑 API Key check:", apiKey ? `Found (${apiKey.length} chars)` : "❌ MISSING");
+  
   if (!apiKey) {
     console.warn("⚠️ No Gemini API key found, skipping...");
     return null;
   }
 
   try {
+    console.log("📤 Sending request to OpenRouter...");
     const response = await fetch(
       "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" + apiKey,
       {
@@ -117,6 +120,8 @@ async function callGemini(prompt, imageUrl) {
 // =======================
 async function callLLaMA(prompt) {
   const apiKey = process.env.OPENROUTER_API_KEY;
+  console.log("🔑 API Key check:", apiKey ? `Found (${apiKey.length} chars)` : "❌ MISSING");
+  
   if (!apiKey) {
     console.warn("⚠️ No OpenRouter API key found, skipping...");
     return null;
@@ -133,9 +138,19 @@ async function callLLaMA(prompt) {
       },
       body: JSON.stringify({
         model: "meta-llama/llama-3.3-8b-instruct:free",
-        messages: [{ role: "user", content: prompt }]
+        messages: [{ role: "user", content: prompt }],
+        max_tokens: 150
       })
     });
+
+    console.log("📥 Response status:", response.status);
+    console.log("📥 Response ok:", response.ok);
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error("❌ HTTP Error:", response.status, errorText);
+      return null;
+          }
 
     const data = await response.json();
     console.log("📨 LLaMA raw response:", data);
