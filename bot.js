@@ -53,7 +53,19 @@ function checkFAQ(question) {
 // DeepSeek via OpenRouter
 // =======================
 async function callDeepSeek(prompt) {
-  const apiKey = process.env.DEEPSEEK_API_KEY; // OpenRouter key
+  const apiKey = process.env.DEEPSEEK_API_KEY;
+  
+  // Add these debug lines:
+  console.log("🔑 API Key exists:", !!apiKey);
+  console.log("🔑 API Key length:", apiKey ? apiKey.length : 0);
+  console.log("🔑 API Key starts with sk-or:", apiKey ? apiKey.startsWith('sk-or') : false);
+  
+  if (!apiKey) {
+    console.warn("No OpenRouter API key found, skipping...");
+    return null;
+  }
+  
+  // OpenRouter key
   if (!apiKey) {
     console.warn("No OpenRouter API key found, skipping...");
     return null;
