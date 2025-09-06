@@ -1,4 +1,4 @@
-const express = require("express");
+itconst express = require("express");
 const bodyParser = require("body-parser");
 const fs = require("fs");
 const fetch = require("node-fetch");
@@ -69,8 +69,7 @@ async function callDeepSeek(prompt) {
         "X-Title": "Customer Service Bot" // optional
       },
       body: JSON.stringify({
-       model: "deepseek/deepseek-chat-v3.1:free
-",
+       model: "deepseek/deepseek-chat-v3.1:free",
         messages: [{ role: "user", content: prompt }]
       })
     });
