@@ -2,16 +2,14 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const fs = require("fs");
 const fetch = require("node-fetch");
-const stringSimilarity = require("string-similarity");
 
 const app = express();
 const PORT = process.env.PORT || 10000;
 
-// =======================
-// Config
-// =======================
+// Read from environment or default to 0.6
 const FAQ_MATCH_THRESHOLD = parseFloat(process.env.FAQ_MATCH_THRESHOLD) || 0.6;
-const REQUEST_LIMIT = 5; // per minute
+
+// Log current FAQ threshold at startup
 console.log(`⚙️ Using FAQ_MATCH_THRESHOLD = ${FAQ_MATCH_THRESHOLD}`);
 
 // =======================
@@ -21,31 +19,18 @@ let faq = [];
 try {
   const faqData = fs.readFileSync("faq.json", "utf8");
   faq = JSON.parse(faqData);
-  console.log("✅ FAQ loaded:", faq.length, "entries");
+  console.log("FAQ loaded:", faq.length, "entries");
 } catch (err) {
-  console.error("❌ Failed to load faq.json:", err);
+  console.error("Failed to load faq.json:", err);
 }
 
 app.use(bodyParser.json());
 
 // =======================
-// Anti-spam (simple per-IP rate limit)
-// =======================
-const requestCounts = {};
-setInterval(() => {
-  for (let ip in requestCounts) requestCounts[ip] = 0;
-}, 60 * 1000); // reset every minute
-
-function checkRateLimit(ip) {
-  if (!requestCounts[ip]) requestCounts[ip] = 0;
-  requestCounts[ip]++;
-  if (requestCounts[ip] > REQUEST_LIMIT) return false;
-  return true;
-}
-
-// =======================
 // FAQ checker
 // =======================
+const stringSimilarity = require("string-similarity");
+
 function checkFAQ(question) {
   if (!faq || faq.length === 0) return null;
 
@@ -57,25 +42,21 @@ function checkFAQ(question) {
 
   if (matches.bestMatch.rating >= FAQ_MATCH_THRESHOLD) {
     const matchedFaq = faq[matches.bestMatchIndex];
-    console.log(
-      `🔎 FAQ match: "${question}" → "${matchedFaq?.question}" (score: ${matches.bestMatch.rating.toFixed(2)})`
-    );
+    console.log(`🔎 FAQ match: "${question}" → "${matchedFaq?.question}" (score: ${matches.bestMatch.rating.toFixed(2)})`);
     return matchedFaq ? matchedFaq.answer : null;
   }
 
-  console.log(
-    `⚠️ No FAQ match (score: ${matches.bestMatch.rating.toFixed(2)}) for: "${question}"`
-  );
+  console.log(`⚠️ No FAQ match (score: ${matches.bestMatch.rating.toFixed(2)}) for: "${question}"`);
   return null;
 }
 
 // =======================
-// OpenRouter: Meta-LLaMA
+// Llama via OpenRouter (text only)
 // =======================
-async function callLLaMA(prompt) {
+async function callLlama(prompt) {
   const apiKey = process.env.OPENROUTER_API_KEY;
   if (!apiKey) {
-    console.warn("No OpenRouter API key found, skipping LLaMA...");
+    console.warn("No OpenRouter API key found, skipping...");
     return null;
   }
 
@@ -95,10 +76,11 @@ async function callLLaMA(prompt) {
     });
 
     const data = await response.json();
-    console.log("LLaMA raw response:", data);
+    console.log("Llama raw response:", data);
+
     return data?.choices?.[0]?.message?.content || null;
   } catch (error) {
-    console.error("LLaMA API error:", error);
+    console.error("Llama API error:", error);
     return null;
   }
 }
@@ -115,15 +97,17 @@ async function callGemini(prompt, imageUrl) {
 
   try {
     const response = await fetch(
-      "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" +
-        apiKey,
+      "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" + apiKey,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           contents: [
             {
-              parts: [{ text: prompt }, imageUrl ? { image_url: imageUrl } : {}]
+              parts: [
+                { text: prompt },
+                { image_url: imageUrl }
+              ]
             }
           ]
         })
@@ -132,6 +116,7 @@ async function callGemini(prompt, imageUrl) {
 
     const data = await response.json();
     console.log("Gemini raw response:", data);
+
     return data?.candidates?.[0]?.content?.parts?.[0]?.text || null;
   } catch (error) {
     console.error("Gemini API error:", error);
@@ -144,31 +129,26 @@ async function callGemini(prompt, imageUrl) {
 // =======================
 app.post("/chat", async (req, res) => {
   const { message, imageUrl } = req.body;
-  const userIp = req.ip;
-
-  // 1. Rate limit
-  if (!checkRateLimit(userIp)) {
-    console.warn(`🚨 Spam blocked from ${userIp}`);
-    return res.json({ reply: "You are sending too many requests. Please slow down." });
+  if (!message) {
+    return res.json({ reply: "No message received." });
   }
 
-  // 2. FAQ
+  // 1. FAQ
   const faqAnswer = checkFAQ(message);
   if (faqAnswer) return res.json({ reply: faqAnswer });
 
-  // 3. Gemini (if image)
+  // 2. Gemini (if image)
   if (imageUrl) {
     const visionAnswer = await callGemini(message, imageUrl);
     if (visionAnswer) return res.json({ reply: visionAnswer });
   }
 
-  // 4. LLaMA (default for text)
-  let aiAnswer = await callLLaMA(message);
+  // 3. Llama (text)
+  const aiAnswer = await callLlama(message);
+  if (aiAnswer) return res.json({ reply: aiAnswer });
 
-  // 5. Fallback
-  if (!aiAnswer) aiAnswer = "Sorry, I cannot answer that right now.";
-
-  res.json({ reply: aiAnswer });
+  // 4. Fallback
+  res.json({ reply: "Sorry, I cannot answer that right now." });
 });
 
 // =======================
