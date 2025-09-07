@@ -78,32 +78,55 @@ function checkFAQ(question) {
 // =======================
 async function callGemini(prompt, imageUrl) {
   const apiKey = process.env.GEMINI_API_KEY;
-console.log("🔑 API Key check:", apiKey ? `Found (${apiKey.length} chars)` : "❌ MISSING");
-  
   if (!apiKey) {
     console.warn("⚠️ No Gemini API key found, skipping...");
     return null;
   }
 
   try {
-    console.log("📤 Sending request to OpenRouter...");
+    // First, fetch the image and convert to base64
+    console.log("📥 Fetching image from URL:", imageUrl);
+    const imageResponse = await fetch(imageUrl);
+    if (!imageResponse.ok) {
+      console.error("❌ Failed to fetch image:", imageResponse.status);
+      return null;
+    }
+
+    const imageBuffer = await imageResponse.arrayBuffer();
+    const base64Image = Buffer.from(imageBuffer).toString('base64');
+    // Detect image type from URL or response headers
+    const contentType = imageResponse.headers.get('content-type') || 'image/jpeg';
+    const mimeType = contentType.split('/')[1] || 'jpeg';
+
+    console.log(`📸 Image converted to base64 (${base64Image.length} chars, type: ${mimeType})`);
+
     const response = await fetch(
-      "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" + apiKey,
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           contents: [
-            {
-              parts: [
+    {
+parts: [
                 { text: prompt },
-                ...(imageUrl ? [{ image_url: imageUrl }] : [])
+                {
+                  inline_data: {
+                    mime_type: contentType,
+                    data: base64Image
+                  }
+                }
               ]
             }
           ]
         })
       }
     );
+      if (!response.ok) {
+      const errorText = await response.text();
+      console.error("❌ Gemini HTTP Error:", response.status, errorText);
+      return null;
+    }
 
     const data = await response.json();
     console.log("📨 Gemini raw response:", data);
@@ -113,8 +136,8 @@ console.log("🔑 API Key check:", apiKey ? `Found (${apiKey.length} chars)` : "
     console.error("❌ Gemini API error:", error);
     return null;
   }
-}
-
+  }
+      
 // =======================
 // Meta-LLaMA (OpenRouter)
 // =======================
