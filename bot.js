@@ -76,7 +76,7 @@ function checkFAQ(question) {
 // =======================
 // Gemini Vision (image support)
 // =======================
-async function callGemini(prompt, imageUrl) {
+async function callGemini(prompt, imageUrl, imageBase64, imageMimeType) {
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) {
     console.warn("⚠️ No Gemini API key found, skipping...");
@@ -84,21 +84,38 @@ async function callGemini(prompt, imageUrl) {
   }
 
   try {
-    // First, fetch the image and convert to base64
-    console.log("📥 Fetching image from URL:", imageUrl);
-    const imageResponse = await fetch(imageUrl);
-    if (!imageResponse.ok) {
-      console.error("❌ Failed to fetch image:", imageResponse.status);
-      return null;
+    let inlineData = null;
+
+    if (imageBase64) {
+      // If base64 image provided
+      inlineData = {
+        mime_type: imageMimeType || "image/jpeg",
+        data: imageBase64
+      };
+      console.log(`📸 Using provided base64 image (${imageBase64.length} chars)`);
+    } else if (imageUrl) {
+      // Fetch image from URL and convert to base64
+      console.log("📥 Fetching image from URL:", imageUrl);
+      const imageResponse = await fetch(imageUrl);
+      if (!imageResponse.ok) {
+        console.error("❌ Failed to fetch image:", imageResponse.status);
+        return null;
+      }
+      const imageBuffer = await imageResponse.arrayBuffer();
+      const base64Image = Buffer.from(imageBuffer).toString("base64");
+      const contentType = imageResponse.headers.get("content-type") || "image/jpeg";
+
+      inlineData = {
+        mime_type: contentType,
+        data: base64Image
+      };
+      console.log(`📸 Image converted to base64 (${base64Image.length} chars)`);
     }
 
-    const imageBuffer = await imageResponse.arrayBuffer();
-    const base64Image = Buffer.from(imageBuffer).toString('base64');
-    // Detect image type from URL or response headers
-    const contentType = imageResponse.headers.get('content-type') || 'image/jpeg';
-    const mimeType = contentType.split('/')[1] || 'jpeg';
-
-    console.log(`📸 Image converted to base64 (${base64Image.length} chars, type: ${mimeType})`);
+    if (!inlineData) {
+      console.warn("⚠️ No image provided to Gemini");
+      return null;
+    }
 
     const response = await fetch(
       `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
@@ -107,36 +124,39 @@ async function callGemini(prompt, imageUrl) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           contents: [
-    {
-parts: [
-                { text: prompt },
+            {
+              parts: [
                 {
-                  inline_data: {
-                    mime_type: contentType,
-                    data: base64Image
-                  }
-                }
+                  text: `You are a receipt/screenshot reader. 
+                  Step 1: Extract all visible text and numbers from the image. 
+                  Step 2: If the user asks for a total, identify or calculate it. 
+                  Step 3: Respond clearly and concisely. 
+                  User request: ${prompt}`
+                },
+                { inline_data: inlineData }
               ]
             }
           ]
         })
       }
     );
-      if (!response.ok) {
+
+    if (!response.ok) {
       const errorText = await response.text();
       console.error("❌ Gemini HTTP Error:", response.status, errorText);
       return null;
     }
 
     const data = await response.json();
-    console.log("📨 Gemini raw response:", data);
+    console.log("📨 Gemini raw response:", JSON.stringify(data, null, 2));
 
     return data?.candidates?.[0]?.content?.parts?.[0]?.text || null;
   } catch (error) {
     console.error("❌ Gemini API error:", error);
     return null;
   }
-  }
+}
+
       
 // =======================
 // Meta-LLaMA (OpenRouter)
