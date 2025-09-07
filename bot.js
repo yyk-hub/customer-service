@@ -191,7 +191,6 @@ async function callLLaMA(prompt) {
 app.post("/chat", async (req, res) => {
   const { message, imageUrl,imageBase64, imageMimeType } = req.body;
   const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.ip;
-console.log(`👤 [${ip}] User asked:"${message}"`);
   
   if (!message) {
     return res.json({ reply: "⚠️ No message received." });
