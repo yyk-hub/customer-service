@@ -143,7 +143,7 @@ async function callGemini(prompt, imageUrl, imageBase64, imageMimeType) {
     console.error("❌ Gemini API error:", error);
     return null;
   }
-        }
+        
       
 // =======================
 // Meta-LLaMA (OpenRouter)
@@ -180,7 +180,7 @@ async function callLLaMA(prompt) {
       const errorText = await response.text();
       console.error("❌ HTTP Error:", response.status, errorText);
       return null;
-          }
+          
 
     const data = await response.json();
     console.log("📨 LLaMA raw response:", data);
