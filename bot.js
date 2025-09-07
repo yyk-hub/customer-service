@@ -189,7 +189,7 @@ async function callLLaMA(prompt) {
 // Main chat endpoint
 // =======================
 app.post("/chat", async (req, res) => {
-  const { message, imageUrl } = req.body;
+  const { message, imageUrl,imageBase64, imageMimeType } = req.body;
   const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.ip;
 console.log(`👤 [${ip}] User asked:"${message}"`);
   
