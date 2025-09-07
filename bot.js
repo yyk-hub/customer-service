@@ -211,9 +211,15 @@ console.log(`👤 [${ip}] User asked:"${message}"`);
   if (faqAnswer) return res.json({ reply: faqAnswer });
 
   // 2. Gemini (if image)
-  if (imageUrl) {
-    const visionAnswer = await callGemini(message, imageUrl);
-    if (visionAnswer) return res.json({ reply: visionAnswer });
+  if (imageUrl|| imageBase64) {
+    console.log("🖼️ Image detected,calling Gemini...");
+    
+    const visionAnswer = await callGemini(message, imageUrl, imageBase64, imageMimeType);
+    if (visionAnswer) {
+      console.log("✅ Gemini answered");
+      return res.json({ reply: visionAnswer });
+    }
+    console.log("❌ Gemini failed, continuing to LLaMA...");
   }
 
   // 3. Meta-LLaMA
