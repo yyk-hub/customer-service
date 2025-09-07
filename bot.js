@@ -74,7 +74,7 @@ function checkFAQ(question) {
 }
 
 // =======================
-// Gemini Vision (image support)
+// Gemini Vision (image + OCR + totals)
 // =======================
 async function callGemini(prompt, imageUrl, imageBase64, imageMimeType) {
   const apiKey = process.env.GEMINI_API_KEY;
@@ -84,17 +84,12 @@ async function callGemini(prompt, imageUrl, imageBase64, imageMimeType) {
   }
 
   try {
-    let inlineData = null;
+    let parts = [{
+      text: `${prompt}\n\nPlease provide:\n1. A full detailed description of the image.\n2. Extract all visible text.\n3. Extract all numbers.\n4. If this looks like a receipt/invoice, calculate the total.`
+    }];
 
-    if (imageBase64) {
-      // If base64 image provided
-      inlineData = {
-        mime_type: imageMimeType || "image/jpeg",
-        data: imageBase64
-      };
-      console.log(`📸 Using provided base64 image (${imageBase64.length} chars)`);
-    } else if (imageUrl) {
-      // Fetch image from URL and convert to base64
+    // Case A: external imageUrl
+    if (imageUrl) {
       console.log("📥 Fetching image from URL:", imageUrl);
       const imageResponse = await fetch(imageUrl);
       if (!imageResponse.ok) {
@@ -105,16 +100,24 @@ async function callGemini(prompt, imageUrl, imageBase64, imageMimeType) {
       const base64Image = Buffer.from(imageBuffer).toString("base64");
       const contentType = imageResponse.headers.get("content-type") || "image/jpeg";
 
-      inlineData = {
-        mime_type: contentType,
-        data: base64Image
-      };
-      console.log(`📸 Image converted to base64 (${base64Image.length} chars)`);
+      parts.push({
+        inline_data: {
+          mime_type: contentType,
+          data: base64Image,
+        },
+      });
     }
 
-    if (!inlineData) {
-      console.warn("⚠️ No image provided to Gemini");
-      return null;
+    // Case B: direct base64 upload
+    if (imageBase64) {
+      const mimeType = imageMimeType || "image/jpeg";
+      console.log(`📸 Using provided base64 image (${imageBase64.length} chars, type: ${mimeType})`);
+      parts.push({
+        inline_data: {
+          mime_type: mimeType,
+          data: imageBase64,
+        },
+      });
     }
 
     const response = await fetch(
@@ -122,22 +125,7 @@ async function callGemini(prompt, imageUrl, imageBase64, imageMimeType) {
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          contents: [
-            {
-              parts: [
-                {
-                  text: `You are a receipt/screenshot reader. 
-                  Step 1: Extract all visible text and numbers from the image. 
-                  Step 2: If the user asks for a total, identify or calculate it. 
-                  Step 3: Respond clearly and concisely. 
-                  User request: ${prompt}`
-                },
-                { inline_data: inlineData }
-              ]
-            }
-          ]
-        })
+        body: JSON.stringify({ contents: [{ parts }] }),
       }
     );
 
@@ -148,15 +136,14 @@ async function callGemini(prompt, imageUrl, imageBase64, imageMimeType) {
     }
 
     const data = await response.json();
-    console.log("📨 Gemini raw response:", JSON.stringify(data, null, 2));
+    console.log("📨 Gemini raw response:", data);
 
     return data?.candidates?.[0]?.content?.parts?.[0]?.text || null;
   } catch (error) {
     console.error("❌ Gemini API error:", error);
     return null;
   }
-}
-
+        }
       
 // =======================
 // Meta-LLaMA (OpenRouter)
