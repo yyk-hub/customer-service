@@ -143,7 +143,7 @@ async function callGemini(prompt, imageUrl, imageBase64, imageMimeType) {
     console.error("❌ Gemini API error:", error);
     return null;
   }      
-      
+}
 // =======================
 // Meta-LLaMA (OpenRouter)
 // =======================
