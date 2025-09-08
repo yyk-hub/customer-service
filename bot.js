@@ -234,17 +234,34 @@ app.post("/chat", async (req, res) => {
   const faqAnswer = checkFAQ(message);
   if (faqAnswer) return res.json({ reply: faqAnswer });
 
-// 2. Gemini (if image)
-if (imageUrl || imageBase64) {
-  console.log("🖼️ Image detected, calling Gemini...");
-  
-  const visionAnswer = await callGemini(message, imageUrl, imageBase64, imageMimeType);
-  if (visionAnswer) {
-    console.log("✅ Gemini answered");
-    return res.json({ reply: visionAnswer });
-  }
-  console.log("❌ Gemini failed, continuing to LLaMA...");
+// 2. Image validation before Gemini
+  if (imageBase64 || imageMimeType || imageUrl) {
+    let mimeType = imageMimeType || "image/jpeg";
+
+    // ✅ Allow only jpeg, png, webp
+    const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
+    if (!allowedTypes.includes(mimeType)) {
+      return res.json({ reply: `⚠️ Unsupported image type. Please upload JPEG, PNG, or WebP.` });
     }
+
+    // ✅ Check size (for base64)
+    if (imageBase64) {
+      const sizeBytes = Buffer.from(imageBase64, "base64").length;
+      const maxSize = 1.2 * 1024 * 1024; // 1.2MB
+      if (sizeBytes > maxSize) {
+        return res.json({ reply: `⚠️ Image too large (${(sizeBytes / 1024).toFixed(1)} KB). Please upload under 1.2 MB.` });
+      }
+    }
+
+    // If valid, call Gemini
+    try {
+  const visionAnswer = await callGemini(message, imageUrl, imageBase64, mimeType);
+  if (visionAnswer) return res.json({ reply: visionAnswer });
+  console.log("❌ Gemini gave no reply, continuing to LLaMA...");
+} catch (err) {
+  console.error("❌ Gemini API error:", err);
+  console.log("👉 Falling back to LLaMA...");
+}
 
   // 3. Meta-LLaMA
   const aiAnswer = await callLLaMA(message);
