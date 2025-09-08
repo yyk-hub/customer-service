@@ -42,6 +42,15 @@ function logSecurityEvent(event) {
     }
   });
                                         }
+// =======================
+// Configurable Anti-Spam
+// =======================
+const TEXT_RATE_LIMIT = parseInt(process.env.TEXT_RATE_LIMIT) || 5;
+const TEXT_RATE_INTERVAL = parseInt(process.env.TEXT_RATE_INTERVAL) || 60 * 1000;
+
+const IMAGE_RATE_LIMIT = parseInt(process.env.IMAGE_RATE_LIMIT) || 3;
+const IMAGE_RATE_INTERVAL = parseInt(process.env.IMAGE_RATE_INTERVAL) || 60 * 1000;
+const IMAGE_SIZE_LIMIT = parseInt(process.env.IMAGE_SIZE_LIMIT) || 1.2 * 1024 * 1024; // 1.2 MB
 
 // =======================
 // Config
