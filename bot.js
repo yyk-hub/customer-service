@@ -329,7 +329,7 @@ if ((imageUrl || imageBase64) && isImageRateLimited(ip)) {
     console.error("❌ Gemini API error:", err.message || err);
     console.log("👉 Falling back to LLaMA...");
   }
-    }
+  }
 
   // 3. Meta-LLaMA
   const aiAnswer = await callLLaMA(message);
