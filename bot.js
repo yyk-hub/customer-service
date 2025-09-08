@@ -267,15 +267,6 @@ if ((imageUrl || imageBase64) && isImageRateLimited(ip)) {
     return res.json({ reply: "⚠️ Too many image requests. Please slow down." });
 }
   
-    // 🛡️ Validate image size if base64
-    if (imageBase64) {
-      const sizeInBytes = Buffer.from(imageBase64, "base64").length;
-      if (sizeInBytes > IMAGE_SIZE_LIMIT) {
-        console.warn(`🚫 Image too large: ${sizeInBytes} bytes from ${ip}`);
-        return res.json({ reply: "⚠️ Image too large. Max allowed is 1.2 MB." });
-      }
-    }
-}
   // Admin log
   console.log(`👤 [${ip}] User asked: "${message}"`);
 
