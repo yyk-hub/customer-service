@@ -41,7 +41,7 @@ function logSecurityEvent(event) {
       }
     }
   });
-                                        }
+}
 // =======================
 // Configurable Anti-Spam
 // =======================
