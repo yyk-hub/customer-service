@@ -340,6 +340,7 @@ if ((imageUrl || imageBase64) && isImageRateLimited(ip)) {
       console.log("✅ LLaMA replied successfully");
       // Update rate limit on successful request
       updateRateLimit(ip);
+      updateImageRateLimit(ip);
       return res.json({ reply: aiAnswer });
     }
     
