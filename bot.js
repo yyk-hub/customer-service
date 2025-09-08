@@ -277,13 +277,19 @@ app.post("/chat", async (req, res) => {
   }
     // If valid, call Gemini
     try {
-  const visionAnswer = await callGemini(message, imageUrl, imageBase64, mimeType);
-  if (visionAnswer) return res.json({ reply: visionAnswer });
-  console.log("❌ Gemini gave no reply, continuing to LLaMA...");
-} catch (err) {
-  console.error("❌ Gemini API error:", err);
-  console.log("👉 Falling back to LLaMA...");
+    console.log("🔍 Calling Gemini with validated image...");
+    const visionAnswer = await callGemini(message, imageUrl, imageBase64, mimeType);
+    
+    if (visionAnswer) {
+      console.log("✅ Gemini replied successfully");
+      return res.json({ reply: visionAnswer });
 }
+    console.log("❌ Gemini gave no reply, continuing to LLaMA...");
+  } catch (err) {
+    console.error("❌ Gemini API error:", err.message || err);
+    console.log("👉 Falling back to LLaMA...");
+  }
+    }
 
   // 3. Meta-LLaMA
   const aiAnswer = await callLLaMA(message);
