@@ -221,7 +221,7 @@ app.post("/chat", async (req, res) => {
     return res.json({ reply: "⚠️ No message received." });
   }
 
-  // Anti-spam
+  // Anti-spam (Text+Image)
   if (isRateLimited(ip)) {
     console.warn(`🚫 Rate limit hit by ${ip}`);
     return res.json({ reply: "⚠️ Too many requests. Please slow down." });
