@@ -83,6 +83,10 @@ async function callGemini(prompt, imageUrl, imageBase64, imageMimeType) {
     return null;
   }
 
+  const allowedMimeTypes = ["image/jpeg", "image/png", "image/webp"];
+  let mimeType = imageMimeType || "image/jpeg";
+  let base64Image = null;
+  
   try {
     let parts = [{
       text: `${prompt}\n\nPlease provide:\n1. A full detailed description of the image.\n2. Extract all visible text.\n3. Extract all numbers.\n4. If this looks like a receipt/invoice, calculate the total.`
@@ -97,6 +101,13 @@ async function callGemini(prompt, imageUrl, imageBase64, imageMimeType) {
         return null;
       }
       const imageBuffer = await imageResponse.arrayBuffer();
+      const sizeBytes = buffer.byteLength;
+  const maxSize = 1.2 * 1024 * 1024; // 1.2 MB
+
+  if (sizeBytes > maxSize) {
+    console.warn(`⚠️ Image too large: ${(sizeBytes / 1024).toFixed(1)} KB`);
+    return "⚠️ Please upload an image smaller than 1.2 MB.";
+  }
       const base64Image = Buffer.from(imageBuffer).toString("base64");
       const contentType = imageResponse.headers.get("content-type") || "image/jpeg";
 
@@ -110,6 +121,14 @@ async function callGemini(prompt, imageUrl, imageBase64, imageMimeType) {
 
     // Case B: direct base64 upload
     if (imageBase64) {
+      const sizeBytes = Buffer.from(imageBase64, "base64").length;
+  const maxSize = 1.2 * 1024 * 1024;
+
+  if (sizeBytes > maxSize) {
+    console.warn(`⚠️ Base64 image too large: ${(sizeBytes / 1024).toFixed(1)} KB`);
+    return "⚠️ Please upload an image smaller than 1.2 MB.";
+    }
+      
       const mimeType = imageMimeType || "image/jpeg";
       console.log(`📸 Using provided base64 image (${imageBase64.length} chars, type: ${mimeType})`);
       parts.push({
