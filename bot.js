@@ -349,7 +349,8 @@ if ((imageUrl || imageBase64) && isImageRateLimited(ip)) {
 }
 
   // 4. Fallback
-  res.json({ reply: "❌ Sorry, I cannot answer that right now." });
+  console.log("❌ All AI services failed or gave no response");
+  res.json({ reply: "❌ Sorry, I cannot answer that right now. Please try again later." });
 });
 
 // =======================
