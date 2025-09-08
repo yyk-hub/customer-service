@@ -236,23 +236,45 @@ app.post("/chat", async (req, res) => {
 
 // 2. Image validation before Gemini
   if (imageBase64 || imageMimeType || imageUrl) {
-    let mimeType = imageMimeType || "image/jpeg";
+  let mimeType = imageMimeType || "image/jpeg";
 
-    // ✅ Allow only jpeg, png, webp
-    const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
-    if (!allowedTypes.includes(mimeType)) {
-      return res.json({ reply: `⚠️ Unsupported image type. Please upload JPEG, PNG, or WebP.` });
+  // ✅ Allow only jpeg, png, webp
+  const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
+  if (!allowedTypes.includes(mimeType)) {
+    return res.json({ 
+      reply: `⚠️ Unsupported image type: ${mimeType}. Please upload JPEG, PNG, or WebP.` 
+    });
     }
-
     // ✅ Check size (for base64)
-    if (imageBase64) {
-      const sizeBytes = Buffer.from(imageBase64, "base64").length;
-      const maxSize = 1.2 * 1024 * 1024; // 1.2MB
-      if (sizeBytes > maxSize) {
-        return res.json({ reply: `⚠️ Image too large (${(sizeBytes / 1024).toFixed(1)} KB). Please upload under 1.2 MB.` });
-      }
+  if (imageBase64) {
+    const sizeBytes = Buffer.from(imageBase64, "base64").length;
+    const maxSize = 1.2 * 1024 * 1024; // 1.2MB
+    const sizeMB = sizeBytes / (1024 * 1024);
+    
+    if (sizeBytes > maxSize) {
+      return res.json({ 
+        reply: `⚠️ Image too large (${sizeMB.toFixed(1)} MB). Please upload under 1.2 MB.` 
+      });
     }
-
+    
+    console.log(`✅ Image validated: ${sizeMB.toFixed(2)} MB, ${mimeType}`);
+  }
+    // ✅ Validate imageUrl if provided
+  if (imageUrl) {
+    try {
+      const url = new URL(imageUrl);
+      if (!['http:', 'https:'].includes(url.protocol)) {
+        return res.json({ 
+          reply: `⚠️ Invalid image URL. Only HTTP/HTTPS URLs are allowed.` 
+        });
+      }
+      console.log(`✅ Image URL validated: ${imageUrl}`);
+    } catch (err) {
+      return res.json({ 
+        reply: `⚠️ Invalid image URL format.` 
+      });
+    }
+  }
     // If valid, call Gemini
     try {
   const visionAnswer = await callGemini(message, imageUrl, imageBase64, mimeType);
