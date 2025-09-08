@@ -8,6 +8,42 @@ const app = express();
 const PORT = process.env.PORT || 10000;
 
 // =======================
+// Security Logging (rotate + cleanup)
+// =======================
+function logSecurityEvent(event) {
+  const timestamp = new Date();
+  const dateStr = timestamp.toISOString().slice(0, 10); // YYYY-MM-DD
+  const logDir = "logs";
+
+  // Ensure logs folder exists
+  if (!fs.existsSync(logDir)) {
+    fs.mkdirSync(logDir);
+  }
+
+  const logFile = `${logDir}/security-${dateStr}.log`;
+  const line = `[${timestamp.toISOString()}] ${event}\n`;
+
+  fs.appendFileSync(logFile, line, "utf8");
+  console.log("🛡️ Security Event:", event);
+
+  // Cleanup: remove logs older than 7 days
+  const files = fs.readdirSync(logDir);
+  const cutoff = Date.now() - 7 * 24 * 60 * 60 * 1000; // 7 days in ms
+
+  files.forEach(file => {
+    if (file.startsWith("security-") && file.endsWith(".log")) {
+      const dateStr = file.slice(9, 19); // extract YYYY-MM-DD
+      const fileDate = new Date(dateStr).getTime();
+
+      if (!isNaN(fileDate) && fileDate < cutoff) {
+        fs.unlinkSync(`${logDir}/${file}`);
+        console.log(`🗑️ Deleted old log: ${file}`);
+      }
+    }
+  });
+                                        }
+
+// =======================
 // Config
 // =======================
 const FAQ_MATCH_THRESHOLD = parseFloat(process.env.FAQ_MATCH_THRESHOLD) || 0.6;
