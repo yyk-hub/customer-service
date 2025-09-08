@@ -226,7 +226,11 @@ app.post("/chat", async (req, res) => {
     console.warn(`🚫 Rate limit hit by ${ip}`);
     return res.json({ reply: "⚠️ Too many requests. Please slow down." });
   }
-
+if ((imageUrl || imageBase64) && isImageRateLimited(ip)) {
+    console.warn(`🚫 Image rate limit hit by ${ip}`);
+    return res.json({ reply: "⚠️ Too many image requests. Please slow down." });
+}
+  
   // Admin log
   console.log(`👤 [${ip}] User asked: "${message}"`);
 
