@@ -1,7 +1,7 @@
 {
   "name": "customer-service-bot",
   "version": "1.0.0",
-  "description": "Customer Service Bot with FAQ, DeepSeek, and Gemini support",
+  "description": "Customer Service Bot with FAQ, Meta-llama, and Gemini support",
   "main": "bot.js",
   "scripts": {
     "start": "node bot.js"
