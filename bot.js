@@ -332,8 +332,21 @@ if ((imageUrl || imageBase64) && isImageRateLimited(ip)) {
   }
 
   // 3. Meta-LLaMA
-  const aiAnswer = await callLLaMA(message);
-  if (aiAnswer) return res.json({ reply: aiAnswer });
+  try {
+    console.log("🔍 Calling LLaMA...");
+    const aiAnswer = await callLLaMA(message);
+    
+    if (aiAnswer) {
+      console.log("✅ LLaMA replied successfully");
+      // Update rate limit on successful request
+      updateRateLimit(ip);
+      return res.json({ reply: aiAnswer });
+    }
+    
+    console.log("❌ LLaMA gave no reply");
+  } catch (err) {
+    console.error("❌ LLaMA API error:", err.message || err);
+}
 
   // 4. Fallback
   res.json({ reply: "❌ Sorry, I cannot answer that right now." });
