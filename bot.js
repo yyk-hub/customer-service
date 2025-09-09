@@ -89,8 +89,6 @@ function isRateLimited(ip) {
     userRequests.set(ip, []);
   }
   const timestamps = userRequests.get(ip).filter(ts => now - ts < RATE_INTERVAL);
-  timestamps.push(now);
-  userRequests.set(ip, timestamps);
 
   return timestamps.length > RATE_LIMIT;
 }
@@ -113,8 +111,18 @@ function updateRateLimit(ip) {
   timestamps.push(now);
   // Keep only recent timestamps
   const recentTimestamps = timestamps.filter(ts => now - ts < IMAGE_RATE_INTERVAL);
-  userImageRequests.set(ip, recentTimestamps);
+  userRequests.set(ip, recentTimestamps);
 }
+function updateImageRateLimit(ip) {
+  const now = Date.now();
+  if (!userImageRequests.has(ip)) {
+    userImageRequests.set(ip, []);
+  }
+  const timestamps = userImageRequests.get(ip);
+  timestamps.push(now);
+  // Keep only recent timestamps
+  const recentTimestamps = timestamps.filter(ts => now - ts < IMAGE_RATE_INTERVAL);
+  userImageRequests.set(ip, recentTimestamps);
 // =======================
 // FAQ checker
 // =======================
