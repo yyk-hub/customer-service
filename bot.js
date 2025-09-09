@@ -56,8 +56,8 @@ const IMAGE_SIZE_LIMIT = parseInt(process.env.IMAGE_SIZE_LIMIT) || 1.2 * 1024 * 
 // Config
 // =======================
 const FAQ_MATCH_THRESHOLD = parseFloat(process.env.FAQ_MATCH_THRESHOLD) || 0.6;
-const RATE_LIMIT = 5; // max 5 requests
-const RATE_INTERVAL = 60 * 1000; // per minute
+const RATE_LIMIT = TEXT_RATE_LIMIT; // Use configurable limit
+const RATE_INTERVAL = TEXT_RATE_INTERVAL; // Use configurable interval
 
 console.log(`⚙️ Using FAQ_MATCH_THRESHOLD = ${FAQ_MATCH_THRESHOLD}`);
 console.log(`⚙️ Text Rate Limit: ${TEXT_RATE_LIMIT}/${TEXT_RATE_INTERVAL/1000}s`);
@@ -75,7 +75,7 @@ try {
   console.error("❌ Failed to load faq.json:", err);
 }
 
-app.use(bodyParser.json());
+app.use(bodyParser.json({ limit: '10mb' })); // Increase payload limit for images
 
 // =======================
 // Anti-Spam Tracking
