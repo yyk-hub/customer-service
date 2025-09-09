@@ -74,9 +74,9 @@ function checkFAQ(question) {
 }
 
 // =======================
-// Gemini Vision (image + OCR + totals)
+// Gemini Vision (image support)
 // =======================
-async function callGemini(prompt, imageUrl, imageBase64, imageMimeType) {
+async function callGemini(prompt, imageUrl) {
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) {
     console.warn("⚠️ No Gemini API key found, skipping...");
@@ -84,52 +84,45 @@ async function callGemini(prompt, imageUrl, imageBase64, imageMimeType) {
   }
 
   try {
-    let parts = [{
-      text: `${prompt}\n\nPlease provide:\n1. A full detailed description of the image.\n2. Extract all visible text.\n3. Extract all numbers.\n4. If this looks like a receipt/invoice, calculate the total.`
-    }];
-
-    // Case A: external imageUrl
-    if (imageUrl) {
-      console.log("📥 Fetching image from URL:", imageUrl);
-      const imageResponse = await fetch(imageUrl);
-      if (!imageResponse.ok) {
-        console.error("❌ Failed to fetch image:", imageResponse.status);
-        return null;
-      }
-      const imageBuffer = await imageResponse.arrayBuffer();
-      const base64Image = Buffer.from(imageBuffer).toString("base64");
-      const contentType = imageResponse.headers.get("content-type") || "image/jpeg";
-
-      parts.push({
-        inline_data: {
-          mime_type: contentType,
-          data: base64Image,
-        },
-      });
+    // First, fetch the image and convert to base64
+    console.log("📥 Fetching image from URL:", imageUrl);
+    const imageResponse = await fetch(imageUrl);
+    if (!imageResponse.ok) {
+      console.error("❌ Failed to fetch image:", imageResponse.status);
+      return null;
     }
 
-    // Case B: direct base64 upload
-    if (imageBase64) {
-      const mimeType = imageMimeType || "image/jpeg";
-      console.log(`📸 Using provided base64 image (${imageBase64.length} chars, type: ${mimeType})`);
-      parts.push({
-        inline_data: {
-          mime_type: mimeType,
-          data: imageBase64,
-        },
-      });
-    }
+    const imageBuffer = await imageResponse.arrayBuffer();
+    const base64Image = Buffer.from(imageBuffer).toString('base64');
+    // Detect image type from URL or response headers
+    const contentType = imageResponse.headers.get('content-type') || 'image/jpeg';
+    const mimeType = contentType.split('/')[1] || 'jpeg';
+
+    console.log(`📸 Image converted to base64 (${base64Image.length} chars, type: ${mimeType})`);
 
     const response = await fetch(
       `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ contents: [{ parts }] }),
+        body: JSON.stringify({
+          contents: [
+    {
+parts: [
+                { text: prompt },
+                {
+                  inline_data: {
+                    mime_type: contentType,
+                    data: base64Image
+                  }
+                }
+              ]
+            }
+          ]
+        })
       }
     );
-
-    if (!response.ok) {
+      if (!response.ok) {
       const errorText = await response.text();
       console.error("❌ Gemini HTTP Error:", response.status, errorText);
       return null;
@@ -142,8 +135,9 @@ async function callGemini(prompt, imageUrl, imageBase64, imageMimeType) {
   } catch (error) {
     console.error("❌ Gemini API error:", error);
     return null;
-  }      
-}
+  }
+  }
+      
 // =======================
 // Meta-LLaMA (OpenRouter)
 // =======================
@@ -179,7 +173,7 @@ async function callLLaMA(prompt) {
       const errorText = await response.text();
       console.error("❌ HTTP Error:", response.status, errorText);
       return null;
-      }
+          }
 
     const data = await response.json();
     console.log("📨 LLaMA raw response:", data);
@@ -241,4 +235,5 @@ if (imageUrl || imageBase64) {
 app.listen(PORT, () => {
   console.log(`🚀 Bot running on port ${PORT}`);
 });
-      
+
+  
