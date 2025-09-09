@@ -167,10 +167,11 @@ async function callGemini(prompt, imageUrl, imageBase64, imageMimeType) {
         return null;
       }
       const imageBuffer = await imageResponse.arrayBuffer();
-      const sizeBytes = buffer.byteLength;
+      const sizeBytes = imageBuffer.byteLength;
   const maxSize = 1.2 * 1024 * 1024; // 1.2 MB
 
   if (sizeBytes > maxSize) {
+    const sizeMB = sizeBytes / (1024 * 1024);
     console.warn(`⚠️ Image too large: ${(sizeBytes / 1024).toFixed(1)} KB`);
     return "⚠️ Please upload an image smaller than 1.2 MB.";
   }
