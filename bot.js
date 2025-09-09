@@ -1,3 +1,4 @@
+const express = require("express");
 const bodyParser = require("body-parser");
 const fs = require("fs");
 const fetch = require("node-fetch");
@@ -70,8 +71,9 @@ function checkFAQ(question) {
     `⚠️ No FAQ match (score: ${matches.bestMatch.rating.toFixed(2)}) for: "${question}"`
   );
   return null;
-    }
-    // =======================
+}
+
+// =======================
 // Gemini Vision (image + OCR + totals)
 // =======================
 async function callGemini(prompt, imageUrl, imageBase64, imageMimeType) {
@@ -189,7 +191,7 @@ async function callLLaMA(prompt) {
   }
 }
 
-  // =======================
+// =======================
 // Main chat endpoint
 // =======================
 app.post("/chat", async (req, res) => {
