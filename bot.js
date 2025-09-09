@@ -158,10 +158,6 @@ async function callGemini(prompt, imageUrl, imageBase64, imageMimeType) {
     console.warn("⚠️ No Gemini API key found, skipping...");
     return null;
   }
-
-  const allowedMimeTypes = ["image/jpeg", "image/png", "image/webp"];
-  let mimeType = imageMimeType || "image/jpeg";
-  let base64Image = null;
   
   try {
     let parts = [{
