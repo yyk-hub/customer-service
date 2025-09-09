@@ -123,6 +123,7 @@ function updateImageRateLimit(ip) {
   // Keep only recent timestamps
   const recentTimestamps = timestamps.filter(ts => now - ts < IMAGE_RATE_INTERVAL);
   userImageRequests.set(ip, recentTimestamps);
+}
 // =======================
 // FAQ checker
 // =======================
