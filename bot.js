@@ -3,7 +3,7 @@ const bodyParser = require("body-parser");
 const fs = require("fs");
 const fetch = require("node-fetch");
 const stringSimilarity = require("string-similarity");
-
+require("dotenv").config();
 const app = express();
 const PORT = process.env.PORT || 10000;
 
