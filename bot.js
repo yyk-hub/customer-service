@@ -391,4 +391,5 @@ if ((imageUrl || imageBase64) && isImageRateLimited(ip)) {
 // =======================
 app.listen(PORT, () => {
   console.log(`🚀 Bot running on port ${PORT}`);
+  console.log(`📡 Health check: http://localhost:${PORT}/health`);
 });
