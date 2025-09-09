@@ -110,7 +110,7 @@ function updateRateLimit(ip) {
   const timestamps = userRequests.get(ip);
   timestamps.push(now);
   // Keep only recent timestamps
-  const recentTimestamps = timestamps.filter(ts => now - ts < IMAGE_RATE_INTERVAL);
+  const recentTimestamps = timestamps.filter(ts => now - ts < RATE_INTERVAL);
   userRequests.set(ip, recentTimestamps);
 }
 function updateImageRateLimit(ip) {
