@@ -8,6 +8,51 @@ const app = express();
 const PORT = process.env.PORT || 10000;
 
 // =======================
+// Security Logging (rotate + cleanup)
+// =======================
+function logSecurityEvent(event) {
+  const timestamp = new Date();
+  const dateStr = timestamp.toISOString().slice(0, 10); // YYYY-MM-DD
+  const logDir = "logs";
+
+  // Ensure logs folder exists
+  if (!fs.existsSync(logDir)) {
+    fs.mkdirSync(logDir);
+  }
+
+  const logFile = `${logDir}/security-${dateStr}.log`;
+  const line = `[${timestamp.toISOString()}] ${event}\n`;
+
+  fs.appendFileSync(logFile, line, "utf8");
+  console.log("🛡️ Security Event:", event);
+
+  // Cleanup: remove logs older than 7 days
+  const files = fs.readdirSync(logDir);
+  const cutoff = Date.now() - 7 * 24 * 60 * 60 * 1000; // 7 days in ms
+
+  files.forEach(file => {
+    if (file.startsWith("security-") && file.endsWith(".log")) {
+      const dateStr = file.slice(9, 19); // extract YYYY-MM-DD
+      const fileDate = new Date(dateStr).getTime();
+
+      if (!isNaN(fileDate) && fileDate < cutoff) {
+        fs.unlinkSync(`${logDir}/${file}`);
+        console.log(`🗑️ Deleted old log: ${file}`);
+      }
+    }
+  });
+}
+// =======================
+// Configurable Anti-Spam
+// =======================
+const TEXT_RATE_LIMIT = parseInt(process.env.TEXT_RATE_LIMIT) || 5;
+const TEXT_RATE_INTERVAL = parseInt(process.env.TEXT_RATE_INTERVAL) || 60 * 1000;
+
+const IMAGE_RATE_LIMIT = parseInt(process.env.IMAGE_RATE_LIMIT) || 3;
+const IMAGE_RATE_INTERVAL = parseInt(process.env.IMAGE_RATE_INTERVAL) || 60 * 1000;
+const IMAGE_SIZE_LIMIT = parseInt(process.env.IMAGE_SIZE_LIMIT) || 1.2 * 1024 * 1024; // 1.2 MB
+
+// =======================
 // Config
 // =======================
 const FAQ_MATCH_THRESHOLD = parseFloat(process.env.FAQ_MATCH_THRESHOLD) || 0.6;
@@ -15,27 +60,28 @@ const RATE_LIMIT = 5; // max 5 requests
 const RATE_INTERVAL = 60 * 1000; // per minute
 
 console.log(`⚙️ Using FAQ_MATCH_THRESHOLD = ${FAQ_MATCH_THRESHOLD}`);
+console.log(`⚙️ Text Rate Limit: ${TEXT_RATE_LIMIT}/${TEXT_RATE_INTERVAL/1000}s`);
+console.log(`⚙️ Image Rate Limit: ${IMAGE_RATE_LIMIT}/${IMAGE_RATE_INTERVAL/1000}s`);
 
 // =======================
 // Load FAQ
 // =======================
-const fs = require("fs").promises;
-
 let faq = [];
-(async () => {
-  try {
-    const faqData = await fs.readFile("faq.json", "utf8");
-    faq = JSON.parse(faqData);
-    console.log("✅ FAQ loaded:", faq.length, "entries");
-  } catch (err) {
-    console.error("❌ Failed to load faq.json:", err);
-  }
-})();
+try {
+  const faqData = fs.readFileSync("faq.json", "utf8");
+  faq = JSON.parse(faqData);
+  console.log("✅ FAQ loaded:", faq.length, "entries");
+} catch (err) {
+  console.error("❌ Failed to load faq.json:", err);
+}
+
+app.use(bodyParser.json());
 
 // =======================
 // Anti-Spam Tracking
 // =======================
 const userRequests = new Map();
+const userImageRequests = new Map();
 
 function isRateLimited(ip) {
   const now = Date.now();
@@ -48,7 +94,27 @@ function isRateLimited(ip) {
 
   return timestamps.length > RATE_LIMIT;
 }
+function isImageRateLimited(ip) {
+  const now = Date.now();
+  if (!userImageRequests.has(ip)) {
+    userImageRequests.set(ip, []);
+  }
+  const timestamps = userImageRequests.get(ip).filter(ts => now - ts < IMAGE_RATE_INTERVAL);
+  
+  return timestamps.length >= IMAGE_RATE_LIMIT;
+}
 
+function updateRateLimit(ip) {
+  const now = Date.now();
+  if (!userRequests.has(ip)) {
+    userRequests.set(ip, []);
+  }
+  const timestamps = userRequests.get(ip);
+  timestamps.push(now);
+  // Keep only recent timestamps
+  const recentTimestamps = timestamps.filter(ts => now - ts < IMAGE_RATE_INTERVAL);
+  userImageRequests.set(ip, recentTimestamps);
+}
 // =======================
 // FAQ checker
 // =======================
@@ -85,6 +151,10 @@ async function callGemini(prompt, imageUrl, imageBase64, imageMimeType) {
     return null;
   }
 
+  const allowedMimeTypes = ["image/jpeg", "image/png", "image/webp"];
+  let mimeType = imageMimeType || "image/jpeg";
+  let base64Image = null;
+  
   try {
     let parts = [{
       text: `${prompt}\n\nPlease provide:\n1. A full detailed description of the image.\n2. Extract all visible text.\n3. Extract all numbers.\n4. If this looks like a receipt/invoice, calculate the total.`
@@ -99,6 +169,14 @@ async function callGemini(prompt, imageUrl, imageBase64, imageMimeType) {
         return null;
       }
       const imageBuffer = await imageResponse.arrayBuffer();
+      const sizeBytes = imageBuffer.byteLength;
+  const maxSize = 1.2 * 1024 * 1024; // 1.2 MB
+
+  if (sizeBytes > maxSize) {
+    const sizeMB = sizeBytes / (1024 * 1024);
+    console.warn(`⚠️ Image too large: ${(sizeBytes / 1024).toFixed(1)} KB`);
+    return "⚠️ Please upload an image smaller than 1.2 MB.";
+  }
       const base64Image = Buffer.from(imageBuffer).toString("base64");
       const contentType = imageResponse.headers.get("content-type") || "image/jpeg";
 
@@ -112,6 +190,15 @@ async function callGemini(prompt, imageUrl, imageBase64, imageMimeType) {
 
     // Case B: direct base64 upload
     if (imageBase64) {
+      const sizeBytes = Buffer.from(imageBase64, "base64").length;
+  const maxSize = 1.2 * 1024 * 1024;
+
+  if (sizeBytes > maxSize) {
+    const sizeMB = sizeBytes / (1024 * 1024);
+    console.warn(`⚠️ Base64 image too large: ${(sizeBytes / 1024).toFixed(1)} KB`);
+    return "⚠️ Please upload an image smaller than 1.2 MB.";
+    }
+      
       const mimeType = imageMimeType || "image/jpeg";
       console.log(`📸 Using provided base64 image (${imageBase64.length} chars, type: ${mimeType})`);
       parts.push({
@@ -204,12 +291,16 @@ app.post("/chat", async (req, res) => {
     return res.json({ reply: "⚠️ No message received." });
   }
 
-  // Anti-spam
+  // Anti-spam (Text+Image)
   if (isRateLimited(ip)) {
     console.warn(`🚫 Rate limit hit by ${ip}`);
     return res.json({ reply: "⚠️ Too many requests. Please slow down." });
   }
-
+if ((imageUrl || imageBase64) && isImageRateLimited(ip)) {
+    console.warn(`🚫 Image rate limit hit by ${ip}`);
+    return res.json({ reply: "⚠️ Too many image requests. Please slow down." });
+}
+  
   // Admin log
   console.log(`👤 [${ip}] User asked: "${message}"`);
 
@@ -217,24 +308,95 @@ app.post("/chat", async (req, res) => {
   const faqAnswer = checkFAQ(message);
   if (faqAnswer) return res.json({ reply: faqAnswer });
 
-// 2. Gemini (if image)
-if (imageUrl || imageBase64) {
-  console.log("🖼️ Image detected, calling Gemini...");
-  
-  const visionAnswer = await callGemini(message, imageUrl, imageBase64, imageMimeType);
-  if (visionAnswer) {
-    console.log("✅ Gemini answered");
-    return res.json({ reply: visionAnswer });
-  }
-  console.log("❌ Gemini failed, continuing to LLaMA...");
+// 2. Image validation before Gemini
+  if (imageBase64 || imageMimeType || imageUrl) {
+  let mimeType = imageMimeType || "image/jpeg";
+
+  // ✅ Allow only jpeg, png, webp
+  const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
+  if (!allowedTypes.includes(mimeType)) {
+    return res.json({ 
+      reply: `⚠️ Unsupported image type: ${mimeType}. Please upload JPEG, PNG, or WebP.` 
+    });
     }
+    // ✅ Check size (for base64)
+  if (imageBase64) {
+    const sizeBytes = Buffer.from(imageBase64, "base64").length;
+    const maxSize = 1.2 * 1024 * 1024; // 1.2MB
+    const sizeMB = sizeBytes / (1024 * 1024);
+    
+    if (sizeBytes > maxSize) {
+      return res.json({ 
+        reply: `⚠️ Image too large (${sizeMB.toFixed(1)} MB). Please upload under 1.2 MB.` 
+      });
+    }
+    
+    console.log(`✅ Image validated: ${sizeMB.toFixed(2)} MB, ${mimeType}`);
+  }
+    // ✅ Validate imageUrl if provided
+  if (imageUrl) {
+    try {
+      const url = new URL(imageUrl);
+      if (!['http:', 'https:'].includes(url.protocol)) {
+        return res.json({ 
+          reply: `⚠️ Invalid image URL. Only HTTP/HTTPS URLs are allowed.` 
+        });
+      }
+      console.log(`✅ Image URL validated: ${imageUrl}`);
+    } catch (err) {
+      return res.json({ 
+        reply: `⚠️ Invalid image URL format.` 
+      });
+    }
+  }
+    // If valid, call Gemini
+    try {
+    console.log("🔍 Calling Gemini with validated image...");
+    const visionAnswer = await callGemini(message, imageUrl, imageBase64, mimeType);
+    
+    if (visionAnswer) {
+      console.log("✅ Gemini replied successfully");
+      return res.json({ reply: visionAnswer });
+}
+    console.log("❌ Gemini gave no reply, continuing to LLaMA...");
+  } catch (err) {
+    console.error("❌ Gemini API error:", err.message || err);
+    console.log("👉 Falling back to LLaMA...");
+  }
+  }
 
   // 3. Meta-LLaMA
-  const aiAnswer = await callLLaMA(message);
-  if (aiAnswer) return res.json({ reply: aiAnswer });
+  try {
+    console.log("🔍 Calling LLaMA...");
+    const aiAnswer = await callLLaMA(message);
+    
+    if (aiAnswer) {
+      console.log("✅ LLaMA replied successfully");
+      // Update rate limit on successful request
+      updateRateLimit(ip);
+      updateImageRateLimit(ip);
+      return res.json({ reply: aiAnswer });
+    }
+    
+    console.log("❌ LLaMA gave no reply");
+  } catch (err) {
+    console.error("❌ LLaMA API error:", err.message || err);
+}
 
   // 4. Fallback
-  res.json({ reply: "❌ Sorry, I cannot answer that right now." });
+  console.log("❌ All AI services failed or gave no response");
+  res.json({ reply: "❌ Sorry, I cannot answer that right now. Please try again later." });
+});
+
+// =======================
+// Health check endpoint
+// =======================
+app.get('/health', (req, res) => {
+  res.json({ 
+    status: 'OK', 
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime()
+  });
 });
 
 // =======================
@@ -242,5 +404,6 @@ if (imageUrl || imageBase64) {
 // =======================
 app.listen(PORT, () => {
   console.log(`🚀 Bot running on port ${PORT}`);
+  console.log(`📡 Health check: http://localhost:${PORT}/health`);
 });
-  
+    
