@@ -72,7 +72,7 @@ try {
   faq = JSON.parse(faqData);
   console.log("✅ FAQ loaded:", faq.length, "entries");
 } catch (err) {
-  console.error("❌ Failed to load faq.json:", err);
+  console.error("❌ Failed to load faq.json:", err.message);
 }
 
 app.use(bodyParser.json({ limit: '10mb' })); // Increase payload limit for images
@@ -178,7 +178,7 @@ async function callGemini(prompt, imageUrl, imageBase64, imageMimeType) {
 
   if (sizeBytes > maxSize) {
     const sizeMB = sizeBytes / (1024 * 1024);
-    console.warn(`⚠️ Image too large: ${(sizeBytes / 1024).toFixed(1)} KB`);
+    console.warn(`⚠️ Image too large: ${(sizeMB.toFixed(1)} MB`);
     return "⚠️ Please upload an image smaller than 1.2 MB.";
   }
       const base64Image = Buffer.from(imageBuffer).toString("base64");
@@ -199,7 +199,7 @@ async function callGemini(prompt, imageUrl, imageBase64, imageMimeType) {
 
   if (sizeBytes > maxSize) {
     const sizeMB = sizeBytes / (1024 * 1024);
-    console.warn(`⚠️ Base64 image too large: ${(sizeBytes / 1024).toFixed(1)} KB`);
+    console.warn(`⚠️ Base64 image too large: ${(sizeMB.toFixed(1)} KB`);
     return "⚠️ Please upload an image smaller than 1.2 MB.";
     }
       
@@ -229,7 +229,7 @@ async function callGemini(prompt, imageUrl, imageBase64, imageMimeType) {
     }
 
     const data = await response.json();
-    console.log("📨 Gemini raw response:", data);
+    console.log("📨 Gemini raw response:", JSON.stringify[data, null,2));
 
     return data?.candidates?.[0]?.content?.parts?.[0]?.text || null;
   } catch (error) {
