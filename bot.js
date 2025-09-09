@@ -310,8 +310,10 @@ if ((imageUrl || imageBase64) && isImageRateLimited(ip)) {
 
   // 1. FAQ
   const faqAnswer = checkFAQ(message);
-  if (faqAnswer) return res.json({ reply: faqAnswer });
-
+  if (faqAnswer) {
+    updateRateLimit(ip);
+    return res.json({ reply: faqAnswer });
+  }
 // 2. Image validation before Gemini
   if (imageBase64 || imageMimeType || imageUrl) {
   let mimeType = imageMimeType || "image/jpeg";
@@ -360,6 +362,9 @@ if ((imageUrl || imageBase64) && isImageRateLimited(ip)) {
     
     if (visionAnswer) {
       console.log("✅ Gemini replied successfully");
+      updateRateLimit(ip);
+      updateImageRateLimit(ip);
+      
       return res.json({ reply: visionAnswer });
 }
     console.log("❌ Gemini gave no reply, continuing to LLaMA...");
