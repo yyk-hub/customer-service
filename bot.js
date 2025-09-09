@@ -79,6 +79,7 @@ app.use(bodyParser.json());
 // Anti-Spam Tracking
 // =======================
 const userRequests = new Map();
+const userImageRequests = new Map();
 
 function isRateLimited(ip) {
   const now = Date.now();
@@ -91,7 +92,24 @@ function isRateLimited(ip) {
 
   return timestamps.length > RATE_LIMIT;
 }
+function isImageRateLimited(ip) {
+  const now = Date.now();
+  if (!userImageRequests.has(ip)) {
+    userImageRequests.set(ip, []);
+  }
+  const timestamps = userImageRequests.get(ip).filter(ts => now - ts < IMAGE_RATE_INTERVAL);
+  
+  return timestamps.length >= IMAGE_RATE_LIMIT;
+}
 
+function updateRateLimit(ip) {
+  const now = Date.now();
+  if (!userRequests.has(ip)) {
+    userRequests.set(ip, []);
+  }
+  const timestamps = userRequests.get(ip);
+  timestamps.push(now);
+  
 // =======================
 // FAQ checker
 // =======================
