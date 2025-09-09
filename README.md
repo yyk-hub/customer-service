@@ -1,12 +1,10 @@
-# customer-service
-This is a customers service bot that will answer your questions.
 # Customer Service Bot 🤖
 
 This is a lightweight customer service chatbot project.
 
 ### Features
 - Uses `knowledge.json` as a knowledge base (easy to edit FAQs).
-- Connects to DeepSeek API (via OpenRouter) for AI-powered responses.
+- Connects to Meta-Llama API (via OpenRouter) for AI-powered responses.
 - Can later support Gemini API for image-based queries.
 - Deployable on free hosting (e.g., Render).
 
