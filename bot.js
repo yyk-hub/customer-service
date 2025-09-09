@@ -60,6 +60,8 @@ const RATE_LIMIT = 5; // max 5 requests
 const RATE_INTERVAL = 60 * 1000; // per minute
 
 console.log(`⚙️ Using FAQ_MATCH_THRESHOLD = ${FAQ_MATCH_THRESHOLD}`);
+console.log(`⚙️ Text Rate Limit: ${TEXT_RATE_LIMIT}/${TEXT_RATE_INTERVAL/1000}s`);
+console.log(`⚙️ Image Rate Limit: ${IMAGE_RATE_LIMIT}/${IMAGE_RATE_INTERVAL/1000}s`);
 
 // =======================
 // Load FAQ
