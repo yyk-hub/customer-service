@@ -19,16 +19,18 @@ console.log(`⚙️ Using FAQ_MATCH_THRESHOLD = ${FAQ_MATCH_THRESHOLD}`);
 // =======================
 // Load FAQ
 // =======================
-let faq = [];
-try {
-  const faqData = fs.readFileSync("faq.json", "utf8");
-  faq = JSON.parse(faqData);
-  console.log("✅ FAQ loaded:", faq.length, "entries");
-} catch (err) {
-  console.error("❌ Failed to load faq.json:", err);
-}
+const fs = require("fs").promises;
 
-app.use(bodyParser.json());
+let faq = [];
+(async () => {
+  try {
+    const faqData = await fs.readFile("faq.json", "utf8");
+    faq = JSON.parse(faqData);
+    console.log("✅ FAQ loaded:", faq.length, "entries");
+  } catch (err) {
+    console.error("❌ Failed to load faq.json:", err);
+  }
+})();
 
 // =======================
 // Anti-Spam Tracking
