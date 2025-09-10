@@ -179,7 +179,7 @@ async function callGemini(prompt, imageUrl, imageBase64, imageMimeType) {
 
   if (sizeBytes > maxSize) {
     const sizeMB = sizeBytes / (1024 * 1024);
-    console.warn(`⚠️ Image too large: ${(sizeMB.toFixed(1)} MB`);
+    console.warn(`⚠️ Image too large: ${sizeMB.toFixed(1)} MB`);
     return "⚠️ Please upload an image smaller than 1.2 MB.";
   }
       const base64Image = Buffer.from(imageBuffer).toString("base64");
@@ -200,7 +200,7 @@ async function callGemini(prompt, imageUrl, imageBase64, imageMimeType) {
 
   if (sizeBytes > maxSize) {
     const sizeMB = sizeBytes / (1024 * 1024);
-    console.warn(`⚠️ Base64 image too large: ${(sizeMB.toFixed(1)} KB`);
+    console.warn(`⚠️ Base64 image too large: ${sizeMB.toFixed(1)} KB`);
     return "⚠️ Please upload an image smaller than 1.2 MB.";
     }
       
