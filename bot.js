@@ -334,7 +334,7 @@ if ((imageUrl || imageBase64) && isImageRateLimited(ip)) {
     
     if (sizeBytes > maxSize) {
       return res.json({ 
-        reply: `⚠️ Image too large (${sizeMB.toFixed(1)} MB). Please upload under 1.2 MB.` 
+        reply: `⚠️ Image too large ${sizeMB.toFixed(1)} MB). Please upload under 1.2 MB.` 
       });
     }
     
