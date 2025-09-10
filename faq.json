@@ -1,5 +1,9 @@
 [
   {
+    "question": "Hello",
+    "answer": "Hi there! How can I help you today?"
+  },
+  {
     "question": "How do I get a refund?",
     "answer": "To request a refund, please contact our support team with your order ID."
   },
