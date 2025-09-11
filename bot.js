@@ -213,7 +213,7 @@ async function callLLaMA(prompt) {
     return null;
   }
 const concisePrompt = `${prompt}
-Please answer concisely, using bullet points or a summary. Focus only on the most important points.`;
+Be concise and complete your thought,Short but well-structured answer.Summarize the key point briefly.`;
 
   try {
     const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
