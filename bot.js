@@ -40,8 +40,6 @@ let faq = [];
   }
 })();
 
-app.use(bodyParser.json({ limit: '10mb' }));
-
 // =======================
 // Anti-Spam Tracking
 // =======================
