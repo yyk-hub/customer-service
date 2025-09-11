@@ -213,7 +213,6 @@ async function callLLaMA(prompt) {
     return null;
   }
 const concisePrompt = `${prompt}
-
 Please answer concisely, using bullet points or a summary. Focus only on the most important points.`;
 
   try {
