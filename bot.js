@@ -27,18 +27,16 @@ console.log(`Image Rate Limit: ${IMAGE_RATE_LIMIT}/${IMAGE_RATE_INTERVAL/1000}s`
 // =======================
 // Load FAQ
 // =======================
-const fs = require("fs").promises;
-
 let faq = [];
-(async () => {
-  try {
-    const faqData = await fs.readFile("faq.json", "utf8");
-    faq = JSON.parse(faqData);
-    console.log("✅ FAQ loaded:", faq.length, "entries");
-  } catch (err) {
-    console.error("❌ Failed to load faq.json:", err);
-  }
-})();
+try {
+  const faqData = fs.readFileSync("faq.json", "utf8");
+  faq = JSON.parse(faqData);
+  console.log("FAQ loaded:", faq.length, "entries");
+} catch (err) {
+  console.error("Failed to load faq.json:", err.message);
+}
+
+app.use(bodyParser.json({ limit: '10mb' }));
 
 // =======================
 // Anti-Spam Tracking
