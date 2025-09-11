@@ -6,7 +6,9 @@ const stringSimilarity = require("string-similarity");
 
 const app = express();
 const PORT = process.env.PORT || 10000;
-
+// ✅ Use Express built-in parsers
+app.use(express.json({ limit: '2mb' }));
+app.use(express.urlencoded({ extended: true, limit: '2mb' }));
 // =======================
 // Configurable Anti-Spam
 // =======================
