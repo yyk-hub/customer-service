@@ -207,6 +207,9 @@ async function callLLaMA(prompt) {
     console.warn("No OpenRouter API key found, skipping...");
     return null;
   }
+const concisePrompt = `${prompt}
+
+Please answer concisely, using bullet points or a summary. Focus only on the most important points.`;
 
   try {
     const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
