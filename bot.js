@@ -226,8 +226,9 @@ Be concise and complete your thought,Short but well-structured answer.Summarize 
       },
       body: JSON.stringify({
         model: "meta-llama/llama-3.3-8b-instruct:free",
-        messages: [{ role: "user", content: prompt }],
-        max_tokens:150
+        messages: [{ role: "user", content: concisePrompt }],
+        max_tokens:100
+        temperature: 0.3
       })
     });
 
