@@ -27,16 +27,21 @@ console.log(`Image Rate Limit: ${IMAGE_RATE_LIMIT}/${IMAGE_RATE_INTERVAL/1000}s`
 // =======================
 // Load FAQ
 // =======================
-let faq = [];
-try {
-  const faqData = fs.readFileSync("faq.json", "utf8");
-  faq = JSON.parse(faqData);
-  console.log("FAQ loaded:", faq.length, "entries");
-} catch (err) {
-  console.error("Failed to load faq.json:", err.message);
-}
+const fs = require("fs").promises;
 
-app.use(bodyParser.json({ limit: '10mb' }));
+let faq = [];
+let faqLoaded = false;
+
+(async () => {
+  try {
+    const faqData = await fs.readFile("faq.json", "utf8");
+    faq = JSON.parse(faqData);
+    faqLoaded = true;
+    console.log("FAQ loaded:", faq.length, "entries");
+  } catch (err) {
+    console.error("Failed to load FAQ:", err.message);
+  }
+})();
 
 // =======================
 // Anti-Spam Tracking
@@ -88,7 +93,7 @@ function updateImageRateLimit(ip) {
 // FAQ checker
 // =======================
 function checkFAQ(question) {
-  if (!faq || faq.length === 0) return null;
+  if (!faqloaded || faq.length === 0) return null;
 
   const questions = faq.map(item => item.question);
   const matches = stringSimilarity.findBestMatch(
