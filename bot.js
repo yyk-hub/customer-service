@@ -220,7 +220,7 @@ async function callLLaMA(prompt) {
       body: JSON.stringify({
         model: "meta-llama/llama-3.3-8b-instruct:free",
         messages: [{ role: "user", content: prompt }],
-        max_tokens: 150
+        max_tokens: 70
       })
     });
 
