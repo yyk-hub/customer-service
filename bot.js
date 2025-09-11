@@ -27,14 +27,12 @@ console.log(`Image Rate Limit: ${IMAGE_RATE_LIMIT}/${IMAGE_RATE_INTERVAL/1000}s`
 // =======================
 // Load FAQ
 // =======================
-const fs = require("fs").promises;
-
 let faq = [];
 let faqLoaded = false;
 
 (async () => {
   try {
-    const faqData = await fs.readFile("faq.json", "utf8");
+    const faqData = await fs.promises.readFile("faq.json", "utf8");
     faq = JSON.parse(faqData);
     faqLoaded = true;
     console.log("FAQ loaded:", faq.length, "entries");
@@ -93,7 +91,7 @@ function updateImageRateLimit(ip) {
 // FAQ checker
 // =======================
 function checkFAQ(question) {
-  if (!faqloaded || faq.length === 0) return null;
+  if (!faqLoaded || faq.length === 0) return null;
 
   const questions = faq.map(item => item.question);
   const matches = stringSimilarity.findBestMatch(
