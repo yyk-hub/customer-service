@@ -212,9 +212,12 @@ async function callLLaMA(prompt) {
     console.warn("No OpenRouter API key found, skipping...");
     return null;
   }
-const concisePrompt = `${prompt}
-Be concise and complete your thought,Short but well-structured answer.Summarize the key point briefly.`;
+  // ✅ Subject-matter focused prompt
+  const focusedPrompt = `You are a customer service assistant. Only answer questions related to our products, services, policies, and business operations. If the question is unrelated to customer service matters, politely redirect the conversation back to how you can help with business-related inquiries.
 
+Be concise and complete your thought. Short but well-structured answer.
+Customer question: ${prompt}`;
+  
   try {
     const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
       method: "POST",
@@ -226,7 +229,11 @@ Be concise and complete your thought,Short but well-structured answer.Summarize 
       },
       body: JSON.stringify({
         model: "meta-llama/llama-3.3-8b-instruct:free",
-        messages: [{ role: "user", content: concisePrompt }],
+        messages: [
+          { role: "system",
+           content: "You are a professional customer service assistant. Stay focused on business-related topics only."
+          },
+          { role: "user", content: focusedPrompt }],
         max_tokens:150,
         temperature: 0.3
       })
