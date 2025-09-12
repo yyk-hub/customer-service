@@ -212,9 +212,9 @@ async function callLLaMA(prompt) {
     console.warn("No OpenRouter API key found, skipping...");
     return null;
   }
-  // ✅ Subject-matter focused prompt
-  const focusedPrompt = `You are a customer service assistant. Only answer questions related to our products, services, policies, and business operations. If the question is unrelated to customer service matters, politely redirect the conversation back to how you can help with business-related inquiries.
-
+  // ✅ Multilingual customer service prompt
+  const multilingualPrompt = `You are a helpful multilingual customer service assistant. Respond in the same language the customer uses. Answer questions about products, services, policies, billing, and technical support in any language.
+If asked about unrelated topics (weather, politics, personal advice), politely redirect in the customer's language to business matters.
 Be concise and complete your thought. Short but well-structured answer.
 Customer question: ${prompt}`;
   
@@ -231,11 +231,11 @@ Customer question: ${prompt}`;
         model: "meta-llama/llama-3.3-8b-instruct:free",
         messages: [
           { role: "system",
-           content: "You are a professional customer service assistant. Stay focused on business-related topics only."
+           content: "You are a multilingual customer service assistant. Always respond in the same language the customer uses."
           },
-          { role: "user", content: focusedPrompt }],
-        max_tokens:150,
-        temperature: 1
+          { role: "user", content: multilingualPrompt }],
+        max_tokens:120,
+        temperature: 0.5
       })
     });
 
