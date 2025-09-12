@@ -4,6 +4,10 @@
     "answer": "Hi there! How can I help you today?"
   },
   {
+    "question": "What type of coffee you have?"'
+    "answer": "CEO coffee mix"
+  },
+  {
     "question": "What is CEO Coffee?",
     "answer": "CEO Coffee is a premium instant coffee premix made from carefully selected coffee beans, plant-based creamer, natural sweeteners, and enriched with Yung Kien Ganoderma (Lingzhi mushroom) for added health benefits."
   },
@@ -12,7 +16,7 @@
     "answer": "Ganoderma-enriched (both 3-in-1 and 4-in-1).Health-conscious formulation: No trans fats, no artificial preservatives, and no hydrogenated oils.Halal-certified by JAKIM, suitable for Muslim consumers.Convenient sachets for quick preparation anytime, anywhere."
   },
   {
-    "question": "What are the available variants?",
+    "question": "What are the available coffee type / variants?",
     "answer": "CEO Café 3-in-1 → Coffee, plant-based non-dairy creamer, sweetener, plus Lingzhi extract.CEO Café 4-in-1 (Gold) → Coffee, creamer, cane sugar, plus Lingzhi extract (richer taste)."
   },
   {
@@ -82,6 +86,10 @@
   {
     "question": "Any side effects from Lingzhi?",
     "answer": "Very rare. Some may feel mild stomach upset—start with a small amount to see how your body responds."
+  },
+  {
+    "question": "What type of Tea you have?"'
+    "answer": "Lu Chen Tea Mix"
   },
   {
     "question": "What is Lu Chun Tea Mix?",
