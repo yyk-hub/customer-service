@@ -235,7 +235,7 @@ Customer question: ${prompt}`;
           },
           { role: "user", content: focusedPrompt }],
         max_tokens:150,
-        temperature: 0.3
+        temperature: 1
       })
     });
 
