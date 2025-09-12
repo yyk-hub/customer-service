@@ -13,14 +13,45 @@
   {"question": "What are the available variants?",
     "answer": "CEO Café 3-in-1 → Coffee, plant-based non-dairy creamer, sweetener, plus Lingzhi extract.CEO Café 4-in-1 (Gold) → Coffee, creamer, cane sugar, plus Lingzhi extract (richer taste)."
   },
+  {"question":"Does CEO Coffee contain sugar?",
+    "answer": "3-in-1 → Lightly sweetened (with Lingzhi extract, no added cane sugar).4-in-1 Gold → Contains cane sugar for a sweeter, fuller taste."
+  },
   {
     "question": "How do I prepare CEO Coffee?",
     "answer": "1. Empty one sachet into a cup.2. Add 150–180 ml of hot water.3. Stir well and enjoy."
   },
   {
-    "question": "",
-    "answer": ""
+    "question": "Is CEO Coffee safe for daily consumption?",
+    "answer": "Yes. CEO Coffee is suitable for daily drinking. Those with medical conditions (e.g., diabetes, hypertension) should choose the 3-in-1 (lower sugar) or consult a doctor before consuming the 4-in-1 Gold variant."
   },
+  {
+    "question": "Is CEO Coffee suitable for vegetarians?",
+    "answer": "Yes. It uses plant-based coconut oil creamer and contains no animal-derived ingredients."
+  },
+  {
+    "question": "Is CEO Coffee Halal-certified?",
+    "answer": "Yes. CEO Coffee is certified Halal by JAKIM (Malaysia)."
+  },
+  {
+    "question": "How many sachets are in a box?",
+    "answer" : "Each box typically contains 20 sachets, individually sealed for freshness."
+  },
+  {
+   "question": "Where is CEO Coffee made?",
+    "answer" : "CEO Coffee is proudly produced in Malaysia by Shuang Hor / 313 Ehub Enterprise."
+    
+  },
+  {
+    "question": "Where can I buy CEO Coffee?",
+    "answer": "Buy from me via online "
+  },
+  {
+    "question": "Who is CEO Coffee best suited for?",
+    "answer": "Professionals who need a quick yet functional coffee.
+
+Health-conscious coffee lovers who want the benefits of Lingzhi.Muslim consumers seeking a Halal-certified coffee option."
+  },
+  {},
   {
     "question": "How do I get a refund?",
     "answer": "To request a refund, please contact our support team with your order ID."
