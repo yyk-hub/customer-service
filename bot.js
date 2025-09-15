@@ -204,14 +204,8 @@ async function callGemini(prompt, imageUrl, imageBase64, imageMimeType) {
 // =======================
 // Meta-LLaMA (OpenRouter)
 // =======================
-let rateLimitInfo = {
-remaining: null,
-limit: null,
-resetTime: null,
-lastUpdated: null
-};
 
- // ✅ Add these circuit breaker variables
+ // ✅ Circuit breaker variables
 
 let rateLimitHit = false;
 let rateLimitHitTime = null;
@@ -230,20 +224,17 @@ If asked about unrelated topics (politics, race, debate, financial advice), poli
 Be concise and complete your thought. Short but well-structured answer.
 Customer question: ${prompt}`;
   
-  // Add this at the start of callLLaMA (before the fetch)
-
-if (rateLimitHit) { const timeSinceHit = Date.now() - rateLimitHitTime;
-
- // Don't try API for 5 minutes after 429
-
+//Circuit breaker check
+if (rateLimitHit) {
+const timeSinceHit = Date.now() - rateLimitHitTime;
+// Don't try API for 5 minutes after 429
 if (timeSinceHit < 5 * 60 * 1000) {
 console.log("Circuit breaker active - skipping API call");
 return "Service temporarily limited. Please try again in a few minutes.";
 } else {
-
 // Reset after 5 minutes and try again
-
-rateLimitHit = false; rateLimitHitTime = null;
+rateLimitHit = false;
+rateLimitHitTime = null;
 console.log("Circuit breaker reset - trying API again");
    }
 }
@@ -269,31 +260,33 @@ console.log("Circuit breaker reset - trying API again");
       })
     });
 
-    // ✅ Debug all headers
-console.log("All response headers:"); 
-for (let [key, value] of response.headers) { 
+// ✅ Log all headers
+console.log("All headers returned:");
+response.headers.forEach((value, key) => {
 console.log(`${key}: ${value}`);
- }
+});
 
 
-    // ✅ Track rate limit info
+// ✅ Try rate limit headers (if provided)
 
- rateLimitInfo = {
-remaining: response.headers.get('X-RateLimit-Remaining'),
-limit: response.headers.get('X-RateLimit-Limit'),
-resetTime: response.headers.get('X-RateLimit-Reset'),
-lastUpdated: new Date().toISOString()
-};
+const limit = response.headers.get("x-ratelimit-limit");
+const remaining = response.headers.get("x-ratelimit-remaining");
+const reset = response.headers.get("x-ratelimit-reset");
 
-console.log(`Rate Limit Headers - Remaining: ${rateLimitInfo.remaining}, Limit: ${rateLimitInfo.limit}`);
+if (limit && remaining) {
+  console.log(`Rate Limit: ${limit}, Remaining: ${remaining}, Reset: ${reset}`);
+    } else {
+    console.log("⚠️ No rate limit headers provided (likely free-tier model).");
+    }
 
-// Enhanced 429 handler with circuit breaker
+// Handle 429 (rate limited)
 
 if (response.status === 429) {
 rateLimitHit = true;
 rateLimitHitTime = Date.now();
-console.log("Rate limit hit - activating circuit breaker");
-return "Thank you for your question. For immediate assistance, please contact our support team."; }
+console.warn("🚨 Rate limit hit - activating circuit breaker");
+      return "Service temporarily limited. Please try again in a few minutes.";
+    }
 
     if (!response.ok) {
       const errorText = await response.text();
