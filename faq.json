@@ -4,6 +4,10 @@
     "answer": "Hi there! How can I help you today?"
   },
   {
+    "question": "What are you selling/offer",
+    "answer": "We are selling coffee mix, tea mix, Lingzi, Lacto Berry etc."
+  },
+  {
     "question": "I want/need coffee?",
     "answer": "We have CEO coffee with sugar- 4 in 1 and CEO coffee without sugar- 3 in 1"
   },
