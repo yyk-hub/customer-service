@@ -269,7 +269,12 @@ console.log("Circuit breaker reset - trying API again");
       })
     });
 
-    console.log("LLaMA Response status:", response.status);// Keep for debugging
+    // ✅ Debug all headers
+console.log("All response headers:"); 
+for (let [key, value] of response.headers) { 
+console.log(`${key}: ${value}`);
+ }
+
 
     // ✅ Track rate limit info
 
@@ -280,10 +285,7 @@ resetTime: response.headers.get('X-RateLimit-Reset'),
 lastUpdated: new Date().toISOString()
 };
 
-console.log(`Rate Limit Status: ${rateLimitInfo.remaining}/${rateLimitInfo.limit} remaining`);
-if (rateLimitInfo.remaining && parseInt(rateLimitInfo.remaining) < 10) {
-console.warn(`⚠️ Only ${rateLimitInfo.remaining} requests remaining!`);
-}
+console.log(`Rate Limit Headers - Remaining: ${rateLimitInfo.remaining}, Limit: ${rateLimitInfo.limit}`);
 
 // Enhanced 429 handler with circuit breaker
 
