@@ -209,6 +209,7 @@ async function callGemini(prompt, imageUrl, imageBase64, imageMimeType) {
 
 let rateLimitHit = false;
 let rateLimitHitTime = null;
+let requestCount = 0; //Manual count for Llama 3.38b:free tier
 
 async function callLLaMA(prompt) {
   const apiKey = process.env.OPENROUTER_API_KEY;
@@ -279,6 +280,13 @@ if (limit && remaining) {
     console.log("⚠️ No rate limit headers provided (likely free-tier model).");
     }
 
+// Simple counter for Llama 3.38b:free tier
+requestCount++;
+console.log(`Request #${requestCount} (Free tier: ~50/day limit)`);
+
+if (requestCount > 45) {
+  console.warn("Approaching free tier limit (~50 requests/day)");
+}
 // Handle 429 (rate limited)
 
 if (response.status === 429) {
