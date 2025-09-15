@@ -282,10 +282,10 @@ if (limit && remaining) {
 
 // Simple counter for Llama 3.38b:free tier
 requestCount++;
-console.log(`Request #${requestCount} (Free tier: ~50/day limit)`);
+console.log(`Request #${requestCount} (Free tier: ~50/week limit)`);
 
 if (requestCount > 45) {
-  console.warn("Approaching free tier limit (~50 requests/day)");
+  console.warn("Approaching free tier limit (~50 requests/week)");
 }
 // Handle 429 (rate limited)
 
