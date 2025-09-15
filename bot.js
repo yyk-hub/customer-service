@@ -204,6 +204,18 @@ async function callGemini(prompt, imageUrl, imageBase64, imageMimeType) {
 // =======================
 // Meta-LLaMA (OpenRouter)
 // =======================
+let rateLimitInfo = {
+remaining: null,
+limit: null,
+resetTime: null,
+lastUpdated: null
+};
+
+ // ✅ Add these circuit breaker variables
+
+let rateLimitHit = false;
+let rateLimitHitTime = null;
+
 async function callLLaMA(prompt) {
   const apiKey = process.env.OPENROUTER_API_KEY;
   console.log("API Key check:", apiKey ? `Found (${apiKey.length} chars)` : "MISSING");
@@ -218,6 +230,24 @@ If asked about unrelated topics (politics, race, debate, financial advice), poli
 Be concise and complete your thought. Short but well-structured answer.
 Customer question: ${prompt}`;
   
+  // Add this at the start of callLLaMA (before the fetch)
+
+if (rateLimitHit) { const timeSinceHit = Date.now() - rateLimitHitTime;
+
+ // Don't try API for 5 minutes after 429
+
+if (timeSinceHit < 5 * 60 * 1000) {
+console.log("Circuit breaker active - skipping API call");
+return "Service temporarily limited. Please try again in a few minutes.";
+} else {
+
+// Reset after 5 minutes and try again
+
+rateLimitHit = false; rateLimitHitTime = null;
+console.log("Circuit breaker reset - trying API again");
+   }
+}
+
   try {
     const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
       method: "POST",
@@ -239,7 +269,29 @@ Customer question: ${prompt}`;
       })
     });
 
-    console.log("LLaMA Response status:", response.status);
+    console.log("LLaMA Response status:", response.status);// Keep for debugging
+
+    // ✅ Track rate limit info
+
+ rateLimitInfo = {
+remaining: response.headers.get('X-RateLimit-Remaining'),
+limit: response.headers.get('X-RateLimit-Limit'),
+resetTime: response.headers.get('X-RateLimit-Reset'),
+lastUpdated: new Date().toISOString()
+};
+
+console.log(`Rate Limit Status: ${rateLimitInfo.remaining}/${rateLimitInfo.limit} remaining`);
+if (rateLimitInfo.remaining && parseInt(rateLimitInfo.remaining) < 10) {
+console.warn(`⚠️ Only ${rateLimitInfo.remaining} requests remaining!`);
+}
+
+// Enhanced 429 handler with circuit breaker
+
+if (response.status === 429) {
+rateLimitHit = true;
+rateLimitHitTime = Date.now();
+console.log("Rate limit hit - activating circuit breaker");
+return "Thank you for your question. For immediate assistance, please contact our support team."; }
 
     if (!response.ok) {
       const errorText = await response.text();
