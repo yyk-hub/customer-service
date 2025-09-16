@@ -261,25 +261,6 @@ console.log("Circuit breaker reset - trying API again");
       })
     });
 
-// ✅ Log all headers
-console.log("All headers returned:");
-response.headers.forEach((value, key) => {
-console.log(`${key}: ${value}`);
-});
-
-
-// ✅ Try rate limit headers (if provided)
-
-const limit = response.headers.get("x-ratelimit-limit");
-const remaining = response.headers.get("x-ratelimit-remaining");
-const reset = response.headers.get("x-ratelimit-reset");
-
-if (limit && remaining) {
-  console.log(`Rate Limit: ${limit}, Remaining: ${remaining}, Reset: ${reset}`);
-    } else {
-    console.log("⚠️ No rate limit headers provided (likely free-tier model).");
-    }
-
 // Simple counter for Llama 3.38b:free tier
 requestCount++;
 console.log(`Request #${requestCount} (Free tier: ~50/week limit)`);
@@ -288,7 +269,6 @@ if (requestCount > 45) {
   console.warn("Approaching free tier limit (~50 requests/week)");
 }
 // Handle 429 (rate limited)
-
 if (response.status === 429) {
 rateLimitHit = true;
 rateLimitHitTime = Date.now();
@@ -311,6 +291,36 @@ console.warn("🚨 Rate limit hit - activating circuit breaker");
     return null;
   }
 }
+
+// Add this new function for tracing Api Key Limit
+async function getOpenRouterUsage() {
+  const apiKey = process.env.OPENROUTER_API_KEY;
+  
+  if (!apiKey) {
+    return null;
+  }
+
+  try {
+    const response = await fetch('https://openrouter.ai/api/v1/key', {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+      },
+    });
+
+    if (!response.ok) {
+      console.error('Usage API error:', response.status);
+      return null;
+    }
+
+    const data = await response.json();
+    return data.data;
+  } catch (error) {
+    console.error('Usage API error:', error);
+    return null;
+  }
+}
+
 
 // =======================
 // Main chat endpoint
@@ -425,6 +435,27 @@ app.post("/chat", async (req, res) => {
   // 4. Fallback
   console.log("All AI services failed or gave no response");
   res.json({ reply: "Sorry, I cannot answer that right now. Please try again later." });
+});
+
+// Add endpoint to check usage
+app.get('/usage', async (req, res) => {
+  const usage = await getOpenRouterUsage();
+  
+  if (usage) {
+    res.json({
+      label: usage.label,
+      usage: usage.usage,
+      limit: usage.limit,
+      is_free_tier: usage.is_free_tier,
+      localCounter: requestCount,
+      status: usage.is_free_tier ? 'Free Tier' : 'Paid'
+    });
+  } else {
+    res.json({ 
+      error: 'Could not fetch usage data',
+      localCounter: requestCount 
+    });
+  }
 });
 
 // =======================
