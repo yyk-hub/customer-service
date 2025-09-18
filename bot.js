@@ -257,16 +257,16 @@ console.log("Circuit breaker reset - trying API again");
           },
           { role: "user", content: multilingualPrompt }],
         max_tokens:120,
-        temperature: 0.5
+        temperature: 0.3
       })
     });
 
 // Simple counter for Llama 3.38b:free tier
 requestCount++;
-console.log(`Request #${requestCount} (Free tier: ~50/week limit)`);
+console.log(`Request #${requestCount} (Free tier: ~50/day limit)`);
 
 if (requestCount > 45) {
-  console.warn("Approaching free tier limit (~50 requests/week)");
+  console.warn("Approaching free tier limit (~50 requests/day)");
 }
 // Handle 429 (rate limited)
 if (response.status === 429) {
