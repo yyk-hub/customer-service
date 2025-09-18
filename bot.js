@@ -336,7 +336,7 @@ async function getOpenRouterUsage() {
 // =======================
 // Main chat endpoint
 // =======================
-app.post("/chat", async (req, res) => {
+app.post("/api/chat", async (req, res) => {
   const { message, imageUrl, imageBase64, imageMimeType } = req.body;
   const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.ip;
   
