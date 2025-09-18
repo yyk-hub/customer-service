@@ -9,7 +9,7 @@ const app = express();
 // Add CORS middleware
 app.use(cors({
   origin: [
-    'https://cus-ser.netlify.app',
+    'https://cus-chat.netlify.app',
     'http://localhost:3000', // For local development
     'https://your-custom-domain.com' // If you have a custom domain
   ],
