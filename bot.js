@@ -1,10 +1,20 @@
 const express = require("express");
 const bodyParser = require("body-parser");
+const cors = require("cors"); // to connect Netlify frontend
 const fs = require("fs");
 const fetch = require("node-fetch");
 const stringSimilarity = require("string-similarity");
 
 const app = express();
+// Add CORS middleware
+app.use(cors({
+  origin: [
+    'https://cus-ser.netlify.app',
+    'http://localhost:3000', // For local development
+    'https://your-custom-domain.com' // If you have a custom domain
+  ],
+  credentials: true
+}));
 const PORT = process.env.PORT || 10000;
 
 // ✅ Use Express built-in parsers
