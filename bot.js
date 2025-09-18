@@ -6,6 +6,13 @@ const stringSimilarity = require("string-similarity");
 
 const app = express();
 const PORT = process.env.PORT || 10000;
+// ✅ allow frontend (Netlify) to talk to backend (Render)
+const cors = require('cors');
+// For development: allow all
+app.use(cors());
+// ✅ For production (safer, restrict to Netlify domain)
+// app.use(cors({ origin: "https://your-site.netlify.app" }));
+
 // ✅ Use Express built-in parsers
 app.use(express.json({ limit: '2mb' }));
 app.use(express.urlencoded({ extended: true, limit: '2mb' }));
