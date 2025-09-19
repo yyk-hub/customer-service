@@ -232,7 +232,7 @@ async function callLLaMA(prompt) {
   }
   // ✅ Multilingual customer service prompt
   const multilingualPrompt = `You are a helpful multilingual customer service assistant. Respond in the same language the customer uses. Answer questions about products, services, policies, billing, and technical support in any language.
-If asked about unrelated topics (politics, advice, products not included in FAQ), politely redirect in the customer's language to business matters.
+If asked about unrelated topics (politics, advice, other products), politely redirect in the customer's language to Shuang Hor products.
 Be concise and complete your thought. Short but well-structured answer.
 Customer question: ${prompt}`;
   
