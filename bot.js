@@ -11,6 +11,7 @@ app.use(cors({
   origin: [
     'https://cus-chat.netlify.app',
     'http://localhost:3000', // For local development
+    'https://chat-ui-30l.pages.dev',    // ✅ new Cloudflare Pages frontend
     'https://your-custom-domain.com' // If you have a custom domain
   ],
   credentials: true
