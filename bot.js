@@ -448,7 +448,69 @@ app.post("/api/chat", async (req, res) => {
   console.log("All AI services failed or gave no response");
   res.json({ reply: "Sorry, I cannot answer that right now. Please try again later." });
 });
+// =======================
+// Orders Endpoint
+// =======================
+import sqlite3 from "sqlite3";
+import { open } from "sqlite";
 
+// Open database connection
+let db;
+(async () => {
+  db = await open({
+    filename: "./ceo_orders.db",
+    driver: sqlite3.Database
+  });
+  console.log("✅ Connected to ceo_orders.db");
+})();
+
+// Record order
+app.post("/api/orders", async (req, res) => {
+  try {
+    const order = req.body;
+    if (!order.order_id || !order.cus_name || !order.prod_name) {
+      return res.status(400).json({ success: false, error: "Missing required fields" });
+    }
+
+    const stmt = `
+      INSERT INTO ceo_orders (
+        order_id, cus_name, cus_address, postcode, state_to, country, phone,
+        prod_name, quantity, total_amt, shipping_wt,
+        state_from, shipping_method, shipping_cost, delivery_eta,
+        pymt_method, pymt_status, courier_name, tracking_link
+      )
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `;
+
+    const shippingCost = order.shipping_cost || 0;
+    await db.run(stmt, [
+      order.order_id,
+      order.cus_name,
+      order.cus_address,
+      order.postcode,
+      order.state_to || order.state,   // in case frontend sends "state"
+      order.country || "Malaysia",
+      order.phone,
+      order.prod_name,
+      order.quantity || 1,
+      order.total_amt,
+      order.shipping_wt,
+      order.state_from || "Sabah",
+      order.shipping_method || "Pos Laju",
+      shippingCost,
+      order.delivery_eta || "3 working days",
+      order.pymt_method,
+      order.pymt_status,
+      order.courier_name || "Pos Laju",
+      order.tracking_link
+    ]);
+
+    res.json({ success: true });
+  } catch (err) {
+    console.error("❌ Error saving order:", err);
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
 // Add endpoint to check usage
 app.get('/usage', async (req, res) => {
   const usage = await getOpenRouterUsage();
