@@ -511,6 +511,16 @@ app.post("/api/orders", async (req, res) => {
     res.status(500).json({ success: false, error: err.message });
   }
 });
+// 🧾 Get latest 10 orders (for testing or "View Last Order" button)
+app.get("/api/orders", async (req, res) => {
+  try {
+    const rows = await db.all("SELECT * FROM ceo_orders ORDER BY created_at DESC LIMIT 10");
+    res.json({ success: true, orders: rows });
+  } catch (err) {
+    console.error("❌ Fetch orders error:", err);
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
 // Add endpoint to check usage
 app.get('/usage', async (req, res) => {
   const usage = await getOpenRouterUsage();
