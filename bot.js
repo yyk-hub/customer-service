@@ -451,6 +451,7 @@ app.post("/api/chat", async (req, res) => {
   console.log("All AI services failed or gave no response");
   res.json({ reply: "Sorry, I cannot answer that right now. Please try again later." });
 });
+
 // =======================
 // Orders Endpoint
 // =======================
@@ -459,19 +460,23 @@ import { open } from "sqlite";
 
 // Open database connection
 let db;
-(async () => {
+
+async function initDB() {
   db = await open({
     filename: "./ceo_orders.db",
     driver: sqlite3.Database
   });
   console.log("✅ Connected to ceo_orders.db");
-})();
-initDB().catch((err) => console.error("Database init failed:", err));
+}
+
+// Call initDB once at startup
+initDB().catch((err) => console.error("❌ Database init failed:", err));
 
 // Record order
 app.post("/api/orders", async (req, res) => {
   try {
     const order = req.body;
+
     if (!order.order_id || !order.cus_name || !order.prod_name) {
       return res.status(400).json({ success: false, error: "Missing required fields" });
     }
@@ -487,12 +492,13 @@ app.post("/api/orders", async (req, res) => {
     `;
 
     const shippingCost = order.shipping_cost || 0;
+
     await db.run(stmt, [
       order.order_id,
       order.cus_name,
       order.cus_address,
       order.postcode,
-      order.state_to || order.state,   // in case frontend sends "state"
+      order.state_to || order.state, // fallback to frontend "state"
       order.country || "Malaysia",
       order.phone,
       order.prod_name,
@@ -515,6 +521,7 @@ app.post("/api/orders", async (req, res) => {
     res.status(500).json({ success: false, error: err.message });
   }
 });
+
 // 🧾 Get latest 10 orders (for testing or "View Last Order" button)
 app.get("/api/orders", async (req, res) => {
   try {
@@ -525,6 +532,7 @@ app.get("/api/orders", async (req, res) => {
     res.status(500).json({ success: false, error: err.message });
   }
 });
+
 // Add endpoint to check usage
 app.get('/usage', async (req, res) => {
   const usage = await getOpenRouterUsage();
