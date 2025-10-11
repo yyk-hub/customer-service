@@ -1,9 +1,12 @@
-const express = require("express");
-const bodyParser = require("body-parser");
-const cors = require("cors"); // to connect Netlify frontend
-const fs = require("fs");
-const fetch = require("node-fetch");
-const stringSimilarity = require("string-similarity");
+// ==========================
+// ES Module Imports
+// ==========================
+import express from "express";
+import bodyParser from "body-parser";
+import cors from "cors"; // to connect Netlify frontend
+import  fs from "fs";
+import fetch from "node-fetch";
+import stringSimilarity from "string-similarity";
 
 const app = express();
 // Add CORS middleware
@@ -463,6 +466,7 @@ let db;
   });
   console.log("✅ Connected to ceo_orders.db");
 })();
+initDB().catch((err) => console.error("Database init failed:", err));
 
 // Record order
 app.post("/api/orders", async (req, res) => {
