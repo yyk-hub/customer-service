@@ -19,7 +19,13 @@ app.use(cors({
   ],
   credentials: true
 }));
+
+// ✅ Use Render's dynamic port OR fallback to 10000 locally
 const PORT = process.env.PORT || 10000;
+
+app.listen(PORT, () => {
+  console.log(`🚀 Server running on port ${PORT}`);
+});
 
 // ✅ Use Express built-in parsers
 app.use(express.json({ limit: '2mb' }));
