@@ -22,9 +22,6 @@ app.use(cors({
 
 // ✅ Correct Render port binding
 const PORT = process.env.PORT || 3000; // 3000 is only for local testing
-app.listen(Number(PORT), "0.0.0.0", () => {
-  console.log(`🚀 Server running on port ${PORT}`);
-});
 
 // ✅ Use Express built-in parsers
 app.use(express.json({ limit: '2mb' }));
@@ -619,7 +616,7 @@ app.get('/health', (req, res) => {
 // =======================
 // Start server
 // =======================
-app.listen(PORT, () => {
+app.listen(Number(PORT), "0.0.0.0", () => {
   console.log(`Bot running on port ${PORT}`);
   console.log(`Health check: http://localhost:${PORT}/health`);
 });
