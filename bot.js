@@ -453,26 +453,54 @@ app.post("/api/chat", async (req, res) => {
 });
 
 // =======================
-// Orders Endpoint
+// Orders Endpoint (CEO_orders)
 // =======================
 import sqlite3 from "sqlite3";
 import { open } from "sqlite";
 
-// Open database connection
 let db;
 
+// ---------- Initialize Database ----------
 async function initDB() {
   db = await open({
     filename: "./ceo_orders.db",
     driver: sqlite3.Database
   });
   console.log("✅ Connected to ceo_orders.db");
+
+  await db.exec(`
+    CREATE TABLE IF NOT EXISTS ceo_orders (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      order_id TEXT,
+      cus_name TEXT,
+      cus_address TEXT,
+      postcode TEXT,
+      state_to TEXT,
+      country TEXT,
+      phone TEXT,
+      prod_name TEXT,
+      quantity INTEGER,
+      total_amt REAL,
+      shipping_wt REAL,
+      state_from TEXT,
+      shipping_method TEXT,
+      shipping_cost REAL,
+      delivery_eta TEXT,
+      pymt_method TEXT,
+      pymt_status TEXT,
+      courier_name TEXT,
+      tracking_link TEXT,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
+  `);
+
+  console.log("🧱 Table 'ceo_orders' ready");
 }
 
-// Call initDB once at startup
 initDB().catch((err) => console.error("❌ Database init failed:", err));
 
-// Record order
+
+// ---------- Create New Order ----------
 app.post("/api/orders", async (req, res) => {
   try {
     const order = req.body;
@@ -498,7 +526,7 @@ app.post("/api/orders", async (req, res) => {
       order.cus_name,
       order.cus_address,
       order.postcode,
-      order.state_to || order.state, // fallback to frontend "state"
+      order.state_to || order.state,
       order.country || "Malaysia",
       order.phone,
       order.prod_name,
@@ -522,13 +550,31 @@ app.post("/api/orders", async (req, res) => {
   }
 });
 
-// 🧾 Get latest 10 orders (for testing or "View Last Order" button)
+
+// ---------- Get Latest 10 Orders ----------
 app.get("/api/orders", async (req, res) => {
   try {
     const rows = await db.all("SELECT * FROM ceo_orders ORDER BY created_at DESC LIMIT 10");
-    res.json({ success: true, orders: rows });
+    res.json(rows);
   } catch (err) {
     console.error("❌ Fetch orders error:", err);
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+
+// ---------- Get Orders by Phone ----------
+app.get("/api/orders/by-phone", async (req, res) => {
+  try {
+    const { phone } = req.query;
+    if (!phone) return res.status(400).json({ success: false, error: "Missing phone" });
+    const rows = await db.all(
+      "SELECT * FROM ceo_orders WHERE phone = ? ORDER BY created_at DESC",
+      phone
+    );
+    res.json(rows);
+  } catch (err) {
+    console.error("❌ Fetch orders by phone error:", err);
     res.status(500).json({ success: false, error: err.message });
   }
 });
