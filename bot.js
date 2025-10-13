@@ -3,10 +3,12 @@
 // ==========================
 import express from "express";
 import bodyParser from "body-parser";
-import cors from "cors"; // to connect Netlify frontend
+import cors from "cors"; // to connect Netlify, cloudflare frontend
 import  fs from "fs";
 import fetch from "node-fetch";
 import stringSimilarity from "string-similarity";
+import sqlite3 from "sqlite3";
+import { open } from "sqlite";
 
 const app = express();
 // Add CORS middleware
@@ -17,9 +19,10 @@ app.use(cors({
     'https://chat-ui-30l.pages.dev',    // ✅ new Cloudflare Pages frontend
     'https://your-custom-domain.com' // If you have a custom domain
   ],
-  credentials: true
+  methods: ["GET", "POST", "OPTIONS"],
+allowedHeaders: ["Content-Type"],
 }));
-
+app.use(bodyParser.json());
 // ✅ Correct Render port binding
 const PORT = process.env.PORT || 3000; // 3000 is only for local testing
 
@@ -457,8 +460,6 @@ app.post("/api/chat", async (req, res) => {
 // =======================
 // Orders Endpoint (CEO_orders)
 // =======================
-import sqlite3 from "sqlite3";
-import { open } from "sqlite";
 
 let db;
 
