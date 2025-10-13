@@ -20,10 +20,9 @@ app.use(cors({
   credentials: true
 }));
 
-// ✅ Use Render's dynamic port OR fallback to 10000 locally
-const PORT = process.env.PORT || 10000;
-
-app.listen(PORT, () => {
+// ✅ Correct Render port binding
+const PORT = process.env.PORT || 3000; // 3000 is only for local testing
+app.listen(Number(PORT), "0.0.0.0", () => {
   console.log(`🚀 Server running on port ${PORT}`);
 });
 
