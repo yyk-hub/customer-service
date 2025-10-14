@@ -466,23 +466,25 @@ async function initDB() {
   // Use Cloudflare D1 when available (Render cannot use it directly but we’ll bridge)
 let db;
 
-if (process.env.CF_D1 === "true" && typeof env !== "undefined" && env.DB) {
-  // Running in Cloudflare Worker with D1 binding
-  db = env.DB;
-  console.log("✅ Connected to Cloudflare D1 Database");
-} else {
-  // Fallback to local SQLite (for Render or local testing)
-  const sqlite3 = await import("sqlite3");
-  const { open } = await import("sqlite");
+try {
+  if (process.env.CF_D1 === "true" && typeof env !== "undefined" && env.DB) {
+    db = env.DB;
+    console.log("✅ Connected to Cloudflare D1");
+  } else {
+    const sqlite3pkg = (await import("sqlite3")).default;
+    const { open } = await import("sqlite");
 
-  db = await open({
-    filename: "./ceo_orders.db",
-    driver: sqlite3.Database,
-  });
+    db = await open({
+      filename: "./ceo_orders.db",
+      driver: sqlite3pkg.Database
+    });
 
-  console.log("✅ Connected to local ceo_orders.db (SQLite)");
+    console.log("✅ Connected to local SQLite ceo_orders.db");
+  }
+} catch (err) {
+  console.error("❌ Database init failed:", err);
 }
-
+  
   await db.exec(`
     CREATE TABLE IF NOT EXISTS ceo_orders (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
