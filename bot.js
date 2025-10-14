@@ -461,15 +461,27 @@ app.post("/api/chat", async (req, res) => {
 // Orders Endpoint (CEO_orders)
 // =======================
 
-let db;
-
 // ---------- Initialize Database ----------
 async function initDB() {
+  // Use Cloudflare D1 when available (Render cannot use it directly but we’ll bridge)
+let db;
+
+if (process.env.CF_D1 === "true" && typeof env !== "undefined" && env.DB) {
+  // Running in Cloudflare Worker with D1 binding
+  db = env.DB;
+  console.log("✅ Connected to Cloudflare D1 Database");
+} else {
+  // Fallback to local SQLite (for Render or local testing)
+  const sqlite3 = await import("sqlite3");
+  const { open } = await import("sqlite");
+
   db = await open({
     filename: "./ceo_orders.db",
-    driver: sqlite3.Database
+    driver: sqlite3.Database,
   });
-  console.log("✅ Connected to ceo_orders.db");
+
+  console.log("✅ Connected to local ceo_orders.db (SQLite)");
+}
 
   await db.exec(`
     CREATE TABLE IF NOT EXISTS ceo_orders (
