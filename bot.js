@@ -7,7 +7,7 @@ import cors from "cors"; // to connect Netlify, cloudflare frontend
 import  fs from "fs";
 import fetch from "node-fetch";
 import stringSimilarity from "string-similarity";
-import sqlite3 from "sqlite3";
+import sqlite3pkg from "sqlite3";
 import { open } from "sqlite";
 
 const app = express();
@@ -462,60 +462,61 @@ app.post("/api/chat", async (req, res) => {
 // =======================
 
 // ---------- Initialize Database ----------
-async function initDB() {
-  // Use Cloudflare D1 when available (Render cannot use it directly but we’ll bridge)
+
+// ✅ Declare db globally
 let db;
 
-try {
-  if (process.env.CF_D1 === "true" && typeof env !== "undefined" && env.DB) {
-    db = env.DB;
-    console.log("✅ Connected to Cloudflare D1");
-  } else {
-    const sqlite3pkg = (await import("sqlite3")).default;
-    const { open } = await import("sqlite");
+async function initDB() {
+  try {
+    if (process.env.CF_D1 === "true" && typeof env !== "undefined" && env.DB) {
+      db = env.DB;
+      console.log("✅ Connected to Cloudflare D1");
+    } else {
+      const sqlite3pkg = (await import("sqlite3")).default;
+      const { open } = await import("sqlite");
 
-    db = await open({
-      filename: "./ceo_orders.db",
-      driver: sqlite3pkg.Database
-    });
+      db = await open({
+        filename: "./ceo_orders.db",
+        driver: sqlite3pkg.Database
+      });
 
-    console.log("✅ Connected to local SQLite ceo_orders.db");
+      console.log("✅ Connected to local SQLite ceo_orders.db");
+    }
+
+    await db.exec(`
+      CREATE TABLE IF NOT EXISTS ceo_orders (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        order_id TEXT,
+        cus_name TEXT,
+        cus_address TEXT,
+        postcode TEXT,
+        state_to TEXT,
+        country TEXT,
+        phone TEXT,
+        prod_name TEXT,
+        quantity INTEGER,
+        total_amt REAL,
+        shipping_wt REAL,
+        state_from TEXT,
+        shipping_method TEXT,
+        shipping_cost REAL,
+        delivery_eta TEXT,
+        pymt_method TEXT,
+        pymt_status TEXT,
+        courier_name TEXT,
+        tracking_link TEXT,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+    `);
+
+    console.log("🧱 Table 'ceo_orders' ready");
+  } catch (err) {
+    console.error("❌ Database init failed:", err);
   }
-} catch (err) {
-  console.error("❌ Database init failed:", err);
-}
-  
-  await db.exec(`
-    CREATE TABLE IF NOT EXISTS ceo_orders (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      order_id TEXT,
-      cus_name TEXT,
-      cus_address TEXT,
-      postcode TEXT,
-      state_to TEXT,
-      country TEXT,
-      phone TEXT,
-      prod_name TEXT,
-      quantity INTEGER,
-      total_amt REAL,
-      shipping_wt REAL,
-      state_from TEXT,
-      shipping_method TEXT,
-      shipping_cost REAL,
-      delivery_eta TEXT,
-      pymt_method TEXT,
-      pymt_status TEXT,
-      courier_name TEXT,
-      tracking_link TEXT,
-      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    );
-  `);
-
-  console.log("🧱 Table 'ceo_orders' ready");
 }
 
-initDB().catch((err) => console.error("❌ Database init failed:", err));
-
+// ✅ Initialize database before starting server
+await initDB();
 
 // ---------- Create New Order ----------
 app.post("/api/orders", async (req, res) => {
@@ -560,13 +561,13 @@ app.post("/api/orders", async (req, res) => {
       order.tracking_link
     ]);
 
+    console.log(`✅ Order saved for ${order.cus_name}`);
     res.json({ success: true });
   } catch (err) {
     console.error("❌ Error saving order:", err);
     res.status(500).json({ success: false, error: err.message });
   }
 });
-
 
 // ---------- Get Latest 10 Orders ----------
 app.get("/api/orders", async (req, res) => {
@@ -579,12 +580,12 @@ app.get("/api/orders", async (req, res) => {
   }
 });
 
-
 // ---------- Get Orders by Phone ----------
 app.get("/api/orders/by-phone", async (req, res) => {
   try {
     const { phone } = req.query;
     if (!phone) return res.status(400).json({ success: false, error: "Missing phone" });
+
     const rows = await db.all(
       "SELECT * FROM ceo_orders WHERE phone = ? ORDER BY created_at DESC",
       phone
@@ -596,10 +597,9 @@ app.get("/api/orders/by-phone", async (req, res) => {
   }
 });
 
-// Add endpoint to check usage
-app.get('/usage', async (req, res) => {
+// ---------- Usage endpoint ----------
+app.get("/usage", async (req, res) => {
   const usage = await getOpenRouterUsage();
-  
   if (usage) {
     res.json({
       label: usage.label,
@@ -607,31 +607,29 @@ app.get('/usage', async (req, res) => {
       limit: usage.limit,
       is_free_tier: usage.is_free_tier,
       localCounter: requestCount,
-      status: usage.is_free_tier ? 'Free Tier' : 'Paid'
+      status: usage.is_free_tier ? "Free Tier" : "Paid"
     });
   } else {
-    res.json({ 
-      error: 'Could not fetch usage data',
-      localCounter: requestCount 
-    });
+    res.json({ error: "Could not fetch usage data", localCounter: requestCount });
   }
 });
 
-// =======================
-// Health check endpoint
-// =======================
-app.get('/health', (req, res) => {
-  res.json({ 
-    status: 'OK', 
+// ---------- Health Check ----------
+app.get("/health", (req, res) => {
+  res.json({
+    status: "OK",
     timestamp: new Date().toISOString(),
     uptime: process.uptime()
   });
 });
 
-// =======================
-// Start server
-// =======================
+// ---------- Start Server ----------
+if (!db) {
+  console.error("❌ Database not initialized, shutting down...");
+  process.exit(1);
+}
+
 app.listen(Number(PORT), "0.0.0.0", () => {
-  console.log(`Bot running on port ${PORT}`);
-  console.log(`Health check: http://localhost:${PORT}/health`);
+  console.log(`🚀 Bot running on port ${PORT}`);
+  console.log(`🩺 Health check: http://localhost:${PORT}/health`);
 });
