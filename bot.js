@@ -532,7 +532,7 @@ app.post("/api/orders", async (req, res) => {
         order_id, cus_name, cus_address, postcode, state_to, country, phone,
         prod_name, quantity, total_amt, shipping_wt,
         state_from, shipping_method, shipping_cost, delivery_eta,
-        pymt_method, pymt_status, courier_name, tracking_link
+        pymt_method, order_status, courier_name, tracking_link
       )
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
@@ -552,12 +552,12 @@ app.post("/api/orders", async (req, res) => {
       order.total_amt,
       order.shipping_wt,
       order.state_from || "Sabah",
-      order.shipping_method || "Pos Laju",
+      order.shipping_method || "",
       shippingCost,
       order.delivery_eta || "3 working days",
       order.pymt_method,
-      order.pymt_status,
-      order.courier_name || "Pos Laju",
+      order.order_status,
+      order.courier_name || "",
       order.tracking_link
     ]);
 
