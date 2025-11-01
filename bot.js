@@ -502,7 +502,7 @@ async function initDB() {
         shipping_cost REAL,
         delivery_eta TEXT,
         pymt_method TEXT,
-        pymt_status TEXT,
+        order_status TEXT,
         courier_name TEXT,
         tracking_link TEXT,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
