@@ -3,6 +3,7 @@
     "question": "Hello",
     "answer": "Hi there! How can I help you today?"
   },
+  { "q": "Where are you located?", "a": "Our Head Office is in Kuala Lumpur, Malaysia."},
   {
     "question": "What is your company offers?",
     "answer": "Shuang Hor offers beverage products including Lu Chun Tea Mix, CEO Café (3 IN 1), and CEO Café (4 IN 1), all available on their official beverage product page."
