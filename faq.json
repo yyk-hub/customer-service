@@ -3,7 +3,8 @@
     "question": "Hello",
     "answer": "Hi there! How can I help you today?"
   },
-  { "q": "Where are your distribution centers located?", "a": "Our distribution centers are in several other cities across Malaysia, including Kuala Lupur, Penang, Johor Bahru, Kuching, and Kota Kinabalu."
+  { "question": "Where are your distribution centers located?", 
+    "answer": "Our distribution centers are in several other cities across Malaysia, including Kuala Lupur, Penang, Johor Bahru, Kuching, and Kota Kinabalu."
   },
   {
     "question": "What is your company offers?",
