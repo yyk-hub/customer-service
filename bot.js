@@ -223,14 +223,14 @@ async function callGemini(prompt, imageUrl, imageBase64, imageMimeType) {
 }
 
 // =======================
-// Meta-LLaMA (OpenRouter)
+// x-ai/grok-4.1-fast:free (OpenRouter)
 // =======================
 
  // ✅ Circuit breaker variables
 
 let rateLimitHit = false;
 let rateLimitHitTime = null;
-let requestCount = 0; //Manual count for Llama 3.38b:free tier
+let requestCount = 0; //Manual count for x-ai/grok-4.1-fast:free tier
 
 async function callLLaMA(prompt) {
   const apiKey = process.env.OPENROUTER_API_KEY;
@@ -271,7 +271,7 @@ console.log("Circuit breaker reset - trying API again");
         "X-Title": "Customer Service Bot"
       },
       body: JSON.stringify({
-        model: "meta-llama/llama-3.3-8b-instruct:free",
+        model: "x-ai/grok-4.1-fast:free",
         messages: [
           { role: "system",
            content: "You are a multilingual customer service assistant. Always respond in the same language the customer uses."
@@ -282,7 +282,7 @@ console.log("Circuit breaker reset - trying API again");
       })
     });
 
-// Simple counter for Llama 3.38b:free tier
+// Simple counter for x-ai/grok-4.1-fast:free tier
 requestCount++;
 console.log(`Request #${requestCount} (Free tier: ~50/day limit)`);
 
@@ -299,16 +299,16 @@ console.warn("🚨 Rate limit hit - activating circuit breaker");
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error("LLaMA HTTP Error:", response.status, errorText);
+      console.error("x-ai/grok HTTP Error:", response.status, errorText);
       return null;
     }
 
     const data = await response.json();
-    console.log("LLaMA raw response:", JSON.stringify(data, null, 2));
+    console.log("x-ai/grok raw response:", JSON.stringify(data, null, 2));
 
     return data?.choices?.[0]?.message?.content || null;
   } catch (error) {
-    console.error("LLaMA API error:", error);
+    console.error("x-ai/grok API error:", error);
     return null;
   }
 }
@@ -430,27 +430,27 @@ app.post("/api/chat", async (req, res) => {
         return res.json({ reply: visionAnswer });
       }
       
-      console.log("Gemini gave no reply, continuing to LLaMA...");
+      console.log("Gemini gave no reply, continuing to x-ai/grok...");
     } catch (err) {
       console.error("Gemini API error:", err.message || err);
-      console.log("Falling back to LLaMA...");
+      console.log("Falling back to x-ai/grok...");
     }
   }
 
-  // 3. Meta-LLaMA for text
+  // 3. x-ai/grok for text
   try {
-    console.log("Calling LLaMA...");
+    console.log("Calling x-ai/grok...");
     const aiAnswer = await callLLaMA(message);
     
     if (aiAnswer) {
-      console.log("LLaMA replied successfully");
+      console.log("x-ai/grok replied successfully");
       updateRateLimit(ip);
       return res.json({ reply: aiAnswer });
     }
     
-    console.log("LLaMA gave no reply");
+    console.log("x-ai/grok gave no reply");
   } catch (err) {
-    console.error("LLaMA API error:", err.message || err);
+    console.error("x-ai/grok API error:", err.message || err);
   }
 
   // 4. Fallback
