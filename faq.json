@@ -12,6 +12,10 @@
     "answer": "We are selling coffee mix, tea mix, Lingzi, Lacto Berry, greenzhi toothgel etc."
   },
   {
+    "question": "Do you accept payment with Pi Network?",
+    "answer": "We accept Pi - instant and secure through Pi Browser."
+  },
+  {
     "question": "I want/need coffee",
     "answer": "We have CEO coffee with sugar- 4 in 1 and CEO coffee without sugar- 3 in 1"
   },
@@ -178,11 +182,31 @@
   "answer": "Yes, Lingzhi is safe for long-term use. Many people take it daily for preventive health."
   },
   {
-    "question": "Who should use Lingzhi?",
+  "question": "Who is suitable to use Lingzhi?",
    "answer": "Adults looking for immune and energy support. People with weak body resistance. Those under stress or irregular lifestyle."
   },
   {
     "question": "Any side effects from consuming Lingzhi?",
     "answer": "Generally safe. Some people may experience mild detox reactions (like tiredness) at the start, which usually improves with continued use."
+  },
+  {
+  "question": "What is Lacto-Berry?",
+    "answer": "A probiotic + fruit blend that supports digestion and immunity."
+  },
+  {
+    "question": "What makes it special about Lacto-Berry?",
+    "answer": "It combines probiotics with raspberry, blueberry, and cranberry for gut and urinary health."
+  },
+  {
+  "question": "What are the key benefits of Lacto-Berry?",
+    "answer": "Relieves constipation & diarrhea. Restores gut balance after antibiotics. Reduces bloating & gas. Supports immune function."
+  },
+  {
+    "question": "Who should take Lacto-Berry?",
+    "answer": "It’s natural, safe, and suitable for all ages. People with poor digestion, frequent bloating, irregular bowel movements, or those wanting stronger immunity."
+    },
+  {
+  "question": "How do I take Lacto-Berry?",
+    "answer": "1–2 sachets daily. Mix directly on your tongue or with cool water. Store it at room temperature."
   }
 ]
