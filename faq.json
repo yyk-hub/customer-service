@@ -209,11 +209,32 @@
   "question": "How do I take Lacto-Berry?",
     "answer": "1–2 sachets daily. Mix directly on your tongue or with cool water. Store it at room temperature."
   },
-  {"question": "What is Greenzhi Toothgel?",
+  {
+    "question": "What is Greenzhi Toothgel?",
     "answer": "Greenzhi Toothgel is a natural oral care gel or toothpaste."
   },
   {
-    "question":"Main benefits of Greenzhi Toothgel",
+    "question": "Main benefits of Greenzhi Toothgel",
     "answer": "Helps prevent tartar buildup. Protects gums and support gum health. Freshens breath and gentle on enamel."
+  },
+  {
+    "question": "Is Greenzhi Toothgel safe to use daily?",
+    "answer": "Yes, it’s made from natural ingredients and is free from harsh chemicals."
+  },
+  {
+    "question": "Does Greenzhi really help with gum bleeding?",
+    "answer": "Yes — thanks to chlorophyllin and aloe vera, it helps soothe gums and may reduce bleeding."
+  },
+  {
+    "question": "Can Greenzhi prevent cavities?",
+    "answer": "It helps by reducing plaque formation (especially via Ganoderma) and using xylitol, which is not fermented by harmful bacteria."
+  },
+  {
+    "question": "Is Greenzhi suitable for children / sensitive teeth?",
+    "answer": "Yes, because it has a mild, natural formula and doesn’t contain fluoride — many sources indicate it’s safe for all ages."
+  },
+  {
+    "question": "Can Greenzhi be used for other skin issues?",
+    "answer": "Yes — some people use Greenzhi Toothgel externally for minor skin irritations, bug bites, or small burns because of its soothing aloe and herbal content."
   }
 ]
