@@ -153,6 +153,36 @@
   },
   {
     "question": "Where are you located?",
-    "answer": "We serve customers online. Shuang Hor has a main office in Kuala Lumpur. The company also operates distribution centers in other Malaysian cities like Johor Bahru, Penang, Kuching, and Kota Kinabalu, and has international offices in countries such as Singapore, Hong Kong, Taiwan, and Thailand."
+    "answer": "We serve customers online. Shuang Hor has a main office in Kuala Lumpur. The company also operates distribution centers in other Malaysian cities like Johor Bahru, Penang, Kuching, Kota Kinabalu, and has international offices in countries such as Singapore, Hong Kong, Taiwan, Thailand and Indonesia."
+  },
+  {
+  "question": "What is Lingzhi?",
+    "answer": "Lingzhi (Ganoderma lucidum) is a medicinal mushroom used for over 2,000 years in Chinese wellness traditions, often called the - King of Herbs."
+    },
+  {
+  "question": "Why is Lingzhi special in Shuang Hor products?",
+  "answer": "Shuang Hor cultivates its own Lingzhi with strict quality control to ensure high levels of beneficial compounds like triterpenes and polysaccharides."
+  },
+  {
+  "question": "What are the key benefits of Lingzhi?",
+
+  "answer": "It Supports immunity and body defense, promotes better sleep and reduced fatigue, aids liver detox and overall wellness. It enhances circulation and vitality. Helps balance blood sugar and cholesterol levels."
+  },
+  {
+  "question":  "How is Lingzhi consumed?",
+
+  "answer": "As capsules or powder for health supplementation. Added into CEO Coffee (for energy + wellness). Added into Lu Chun Tea Mix (for balance + immunity)."
+  },
+  {
+  "question": "Can Lingzhi be taken daily?",
+  "answer": "Yes, Lingzhi is safe for long-term use. Many people take it daily for preventive health."
+  },
+  {
+    "question": "Who should use Lingzhi?",
+   "answer": "Adults looking for immune and energy support. People with weak body resistance. Those under stress or irregular lifestyle."
+  },
+  {
+    "question": "Any side effects from consuming Lingzhi?",
+    "answer": "Generally safe. Some people may experience mild detox reactions (like tiredness) at the start, which usually improves with continued use."
   }
 ]
