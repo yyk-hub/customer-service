@@ -9,7 +9,7 @@
   },
   {
     "question": "What are you promoting/selling?",
-    "answer": "We are selling coffee mix, tea mix, Lingzi, Lacto Berry, greenzhi toothgel etc."
+    "answer": "We are selling Coffee mix, Tea mix, Lingzhi, Lacto Berry, Greenzhi Toothgel, Pollen, Soya Powder, Eco Cleaner etc."
   },
   {
     "question": "Do you accept payment with Pi Network?",
@@ -61,7 +61,7 @@
   },
   {
     "question": "Where can I buy CEO Coffee?",
-    "answer": "Buy from me via online"
+    "answer": "Buy conveniently from CEO shop via online"
   },
   {
     "question": "Who is CEO Coffee best suited for?",
@@ -208,5 +208,12 @@
   {
   "question": "How do I take Lacto-Berry?",
     "answer": "1–2 sachets daily. Mix directly on your tongue or with cool water. Store it at room temperature."
+  },
+  {"question": "What is Greenzhi Toothgel?",
+    "answer": "Greenzhi Toothgel is a natural oral care gel or toothpaste."
+  },
+  {
+    "question":"Main benefits of Greenzhi Toothgel",
+    "answer": "Helps prevent tartar buildup. Protects gums and support gum health. Freshens breath and gentle on enamel."
   }
 ]
