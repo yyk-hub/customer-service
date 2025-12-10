@@ -63,9 +63,9 @@ let faqLoaded = false;
     const data = await fs.promises.readFile("faq.json", "utf8");
     faq = JSON.parse(data);
     faqLoaded = true;
-    console.log("FAQ loaded:", faq.length, "items");
+    console.log("✅ FAQ loaded:", faq.length, "items");
   } catch (err) {
-    console.error("Failed to load FAQ:", err.message);
+    console.error("❌ Failed to load FAQ:", err.message);
   }
 })();
 
@@ -81,58 +81,76 @@ function checkFAQ(question) {
   );
 
   if (matches.bestMatch.rating >= FAQ_MATCH_THRESHOLD) {
+    console.log(`✅ FAQ Match: "${question}" -> score: ${matches.bestMatch.rating.toFixed(2)}`);
     return faq[matches.bestMatchIndex].answer;
   }
 
+  console.log(`No FAQ match for: "${question}" (best score: ${matches.bestMatch.rating.toFixed(2)})`);
   return null;
 }
 
 // ==========================
-// Gemini Text-Only API
+// Groq API
 // ==========================
-async function callGemini(userMessage) {
-  const apiKey = process.env.GEMINI_API_KEY;
+async function callGroq(userMessage) {
+  const apiKey = process.env.GROQ_API_KEY;
+  
   if (!apiKey) {
-    console.error("No Gemini API key");
-    return "API Key Missing";
+    console.error("❌ No Groq API key found!");
+    return null;
   }
 
-  const systemPrompt = `
-You are a multilingual customer service assistant for SHUANG HOR.
-Always reply in the same language as the customer's message.
-Keep answers short, helpful, and product-focused.
-  `;
+  const systemPrompt = `You are a multilingual customer service assistant for Shuang Hor (双鹤) health and wellness products.
 
-  const body = {
-    contents: [
-      {
-        parts: [
-          { text: systemPrompt + "\nCustomer message: " + userMessage }
-        ]
-      }
-    ]
-  };
+IMPORTANT RULES:
+- Always reply in the SAME LANGUAGE as the customer's message
+- If customer writes in English, reply in English
+- If customer writes in Chinese, reply in Chinese
+- If customer writes in Malay, reply in Malay
+- Be helpful, friendly, and professional
+- Keep answers concise (2-3 sentences max)
+- Focus on Shuang Hor products: CEO Coffee, Lu Chun Tea, Lingzhi, Lacto-Berry, Greenzhi Toothgel, Pollen, Soya Powder, GoEco Cleaner, VitaKing2, AquaSense, VCare Shampoo
+- If asked about unrelated topics, politely redirect to Shuang Hor products`;
 
   try {
-    const res = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body)
-      }
-    );
+    console.log("🔄 Calling Groq API...");
+    
+    const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${apiKey}`
+      },
+      body: JSON.stringify({
+        model: "llama-3.1-8b-instant",
+        messages: [
+          { role: "system", content: systemPrompt },
+          { role: "user", content: userMessage }
+        ],
+        max_tokens: 200,
+        temperature: 0.3
+      })
+    });
 
-    if (!res.ok) {
-      console.error("Gemini Error:", await res.text());
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error(`❌ Groq HTTP Error ${response.status}:`, errorText);
       return null;
     }
 
-    const data = await res.json();
-    return data?.candidates?.[0]?.content?.parts?.[0]?.text || null;
+    const data = await response.json();
+    const answer = data?.choices?.[0]?.message?.content;
+
+    if (answer) {
+      console.log("✅ Groq replied successfully");
+      return answer;
+    }
+
+    console.warn("⚠️ Groq returned empty response");
+    return null;
 
   } catch (err) {
-    console.error("Gemini API Error:", err);
+    console.error("❌ Groq API Error:", err.message);
     return null;
   }
 }
@@ -144,33 +162,50 @@ app.post("/api/chat", async (req, res) => {
   const { message } = req.body;
   const ip = req.headers["x-forwarded-for"] || req.ip;
 
-  if (!message) return res.json({ reply: "No message received." });
+  if (!message) {
+    return res.json({ reply: "No message received." });
+  }
 
+  // Anti-spam check
   if (isRateLimited(ip)) {
+    console.warn(`⚠️ Rate limit hit by ${ip}`);
     return res.json({ reply: "Too many requests. Please slow down." });
   }
 
+  console.log(`📩 [${ip}] User asked: "${message}"`);
+
+  // 1. Check FAQ first (instant, free)
   const faqAnswer = checkFAQ(message);
   if (faqAnswer) {
     updateRateLimit(ip);
     return res.json({ reply: faqAnswer });
   }
 
-  const response = await callGemini(message);
-
-  if (response) {
+  // 2. Try Groq API
+  const groqResponse = await callGroq(message);
+  if (groqResponse) {
     updateRateLimit(ip);
-    return res.json({ reply: response });
+    return res.json({ reply: groqResponse });
   }
 
-  return res.json({ reply: "Service unavailable, try again later." });
+  // 3. Fallback if Groq fails
+  console.error("❌ Groq API failed");
+  return res.json({ 
+    reply: "Sorry, I'm having trouble connecting right now. Please try again in a moment or contact us via WhatsApp at +60168101358." 
+  });
 });
 
 // ==========================
 // Health Check
 // ==========================
 app.get("/health", (req, res) => {
-  res.json({ status: "OK", time: new Date() });
+  res.json({ 
+    status: "OK", 
+    time: new Date(),
+    faqLoaded: faqLoaded,
+    faqCount: faq.length,
+    groqApiKey: !!process.env.GROQ_API_KEY
+  });
 });
 
 // ==========================
@@ -178,4 +213,7 @@ app.get("/health", (req, res) => {
 // ==========================
 app.listen(PORT, "0.0.0.0", () => {
   console.log(`🚀 Server running on port ${PORT}`);
+  console.log(`🩺 Health check: http://localhost:${PORT}/health`);
+  console.log(`📋 FAQ loaded: ${faqLoaded} (${faq.length} items)`);
+  console.log(`🔑 Groq API: ${process.env.GROQ_API_KEY ? '✅ Found' : '❌ MISSING - Add GROQ_API_KEY to environment variables!'}`);
 });
