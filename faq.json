@@ -8,19 +8,23 @@
     "answer": "Shuang Hor offers beverage products including Lu Chun Tea Mix, CEO Café (3 IN 1), and CEO Café (4 IN 1), all available on their official beverage product page."
   },
   {
-    "question": "What are you promoting/selling?",
+    "question": "What products are you promoting/selling?",
     "answer": "We are selling Coffee mix, Tea mix, Lingzhi, Lacto Berry, Greenzhi Toothgel, Pollen, Soya Powder, Eco Cleaner etc."
   },
   {
-    "question": "Do you accept payment with Pi Network?",
-    "answer": "We accept Pi - instant and secure through Pi Browser."
+    "question": "Do you accept crypto?",
+    "answer": "We accept Pi digital currency - It is instant and secure through Pi Browser."
+  },
+  {
+    "question": "What type of currencies you accept?",
+    "answer": "We accept Malaysia Ringgit (MYR) and Pi digital currency through Pi Browser."
   },
   {
     "question": "I want/need coffee",
     "answer": "We have CEO coffee with sugar- 4 in 1 and CEO coffee without sugar- 3 in 1"
   },
   {
-    "question": "What is CEO Coffee?",
+    "question": "What is CEO Coffee/cafe?",
     "answer": "CEO Coffee is a premium instant coffee premix made from carefully selected coffee beans, plant-based creamer, natural sweeteners, and enriched with Yung Kien Ganoderma (Lingzhi mushroom) for added health benefits."
   },
   {
@@ -28,43 +32,43 @@
     "answer": "Ganoderma-enriched (both 3-in-1 and 4-in-1).Health-conscious formulation: No trans fats, no artificial preservatives, and no hydrogenated oils.Halal-certified by JAKIM, suitable for Muslim consumers.Convenient sachets for quick preparation anytime, anywhere."
   },
   {
-    "question": "What are variant/available coffee?",
+    "question": "What are variant/type of coffee?",
     "answer": "CEO Café 3-in-1 → Coffee, plant-based non-dairy creamer, sweetener, plus Lingzhi extract.CEO Café 4-in-1 (Gold) → Coffee, creamer, cane sugar, plus Lingzhi extract (richer taste)."
   },
   {
-    "question": "Does CEO Coffee contain sugar?",
+    "question": "Does CEO Coffee/cafe contain sugar?",
     "answer": "3-in-1 → Lightly sweetened (with Lingzhi extract, no added cane sugar).4-in-1 Gold → Contains cane sugar for a sweeter, fuller taste."
   },
   {
-    "question": "How do I prepare CEO Coffee?",
+    "question": "How do I prepare CEO Coffee/cafe?",
     "answer": "1. Empty one sachet into a cup.2. Add 150–180 ml of hot water.3. Stir well and enjoy."
   },
   {
-    "question": "Is CEO Coffee safe for daily consumption?",
+    "question": "Is CEO Coffee/cafe safe for daily consumption?",
     "answer": "Yes. CEO Coffee is suitable for daily drinking. Those with medical conditions (e.g., diabetes, hypertension) should choose the 3-in-1 (lower sugar) or consult a doctor before consuming the 4-in-1 Gold variant."
   },
   {
-    "question": "Is CEO Coffee suitable for vegetarians?",
+    "question": "Is CEO Coffee/cafe suitable for vegetarians?",
     "answer": "Yes. It uses plant-based coconut oil creamer and contains no animal-derived ingredients."
   },
   {
-    "question": "Is CEO Coffee Halal-certified?",
+    "question": "Is CEO Coffee/cafe Halal-certified?",
     "answer": "Yes. CEO Coffee is certified Halal by JAKIM (Malaysia)."
   },
   {
-    "question": "How many sachets are in a box?",
+    "question": "How many sachets/packs are in a box?",
     "answer" : "Each box typically contains 20 sachets, individually sealed for freshness."
   },
   {
-   "question": "Where is CEO Coffee made?",
+   "question": "Where is CEO Coffee/cafe made?",
     "answer" : "CEO Coffee is proudly produced in Malaysia by Shuang Hor / 313 Ehub Enterprise."
   },
   {
-    "question": "Where can I buy CEO Coffee?",
+    "question": "Where can I buy CEO Coffee/cafe?",
     "answer": "Buy conveniently from CEO shop via online"
   },
   {
-    "question": "Who is CEO Coffee best suited for?",
+    "question": "Who is CEO Coffee/cafe best suited for?",
     "answer": "Professionals who need a quick yet functional coffee.Health-conscious coffee lovers who want the benefits of Lingzhi.Muslim consumers seeking a Halal-certified coffee option."
   },
   {
@@ -80,7 +84,7 @@
     "answer": "No. With enough calcium and a balanced diet, coffee won’t cause bone loss."
   },
   {
-    "question": "What makes CEO Coffee special?",
+    "question": "What makes CEO Coffee/cafe special?",
     "answer": "It’s enriched with Lingzhi (Ganoderma), known for boosting immunity and supporting overall wellness."
   },
   {
@@ -88,7 +92,7 @@
     "answer": "CEO Coffee contains sugar, so it should be enjoyed in moderation. Ask your doctor if unsure."
   },
   {
-    "question": "Can I drink coffee every day?",
+    "question": "Can I drink coffee daily/every day?",
     "answer": "Yes. 1–2 cups daily are safe for most people—just enjoy it in moderation."
   },
   {
@@ -112,23 +116,23 @@
     "answer": "It’s a premium blend of Oolong tea, brown rice, cassia seed, and Ganoderma (Lingzhi) extract."
   },
   {
-    "question": "What makes Tea special?",
+    "question": "What makes Lu Chun Tea special?",
     "answer": "Unlike regular tea, it combines wellness ingredients that support digestion, vision, and overall health."
   },
   {
-    "question": "Does Tea contain caffeine?",
+    "question": "Does Lu Chun Tea contain caffeine?",
     "answer": "Yes, the Tea has less than coffee—providing a gentle, refreshing energy boost."
   },
   {
-    "question": "What are the health benefits of Tea?",
+    "question": "What are the health benefits of Lu Chun Tea?",
     "answer": "Oolong tea: aids digestion, smooth taste. Brown rice: supports cholesterol and sugar balance. Cassia seed: good for vision, liver, and blood pressure. Ganoderma: boosts immunity and vitality"
   },
   {
-    "question": "How do I prepare Tea?",
+    "question": "How do I prepare Lu Chun Tea?",
     "answer": "Just brew one sachet of Tea in hot water for 3–5 minutes. Enjoy hot or iced."
   },
   {
-    "question": "Can I drink Tea daily?",
+    "question": "Can I drink Lu chun Tea daily?",
     "answer": "Yes! 1–2 cups of Tea a day are safe and beneficial."
   },
   {
@@ -136,20 +140,20 @@
     "answer": "Best for adults due to its active ingredients. Children can try mild tea under guidance."
   },
   {
-    "question": "Does Tea help with oily food?",
+    "question": "Does Lu Chun Tea help with oily food?",
     "answer": "Yes—its Oolong base helps cut greasiness and aids digestion after heavy meals."
   },
   {
-    "question": "How is Tea packed?",
+    "question": "How is Lu Chun Tea packed?",
     "answer": "Individually sealed tea bags for hygiene, freshness, and easy brewing."
   },
   {
-    "question": "Does Tea pair well with CEO Coffee?",
+    "question": "Does Lu Chun Tea pair well with CEO Coffee/cafe?",
     "answer": "Yes! Coffee for energy in the morning, and Lu Chun Tea Mix for balance and wellness anytime."
   },
   {
     "question": "How do I get a refund?",
-    "answer": "To request a refund, please contact our support team with your order ID."
+    "answer": "Terms & Conditions applies. Please contact our support team with your order ID."
   },
   {
     "question": "What are your business hours?",
