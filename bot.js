@@ -126,7 +126,7 @@ Guidelines:
         model: "llama-3.1-8b-instant",
         messages: [
           { role: "system", content: systemPrompt },
-          { role: "user", content: userMessage }
+          { role: "user", content: `[Reply in the same language as this message]\n\n${userMessage}` }
         ],
         max_tokens: 200,
         temperature: 0.3
