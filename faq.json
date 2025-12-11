@@ -19,9 +19,17 @@
     "question": "What type of currencies you accept?",
     "answer": "We accept Malaysia Ringgit (MYR) and Pi digital currency through Pi Browser."
   },
+   {
+    "question": "How do I pay/make payment?",
+    "answer": "For payment method and processing, kindly read the Menu page."
+  },
+  {
+    "question": "How to use the App ?",
+    "answer": "You can read the User's Guide in the Menu page."
+  },
   {
     "question": "I want/need coffee",
-    "answer": "We have CEO coffee with sugar- 4 in 1 and CEO coffee without sugar- 3 in 1"
+    "answer": "We have CEO coffee with sugar- 4 in 1 and CEO coffee without sugar- 3 in 1."
   },
   {
     "question": "What is CEO Coffee/cafe?",
@@ -65,7 +73,7 @@
   },
   {
     "question": "Where can I buy CEO Coffee/cafe?",
-    "answer": "Buy conveniently from CEO shop via online"
+    "answer": "Buy conveniently from CEO shop via online."
   },
   {
     "question": "Who is CEO Coffee/cafe best suited for?",
@@ -109,7 +117,7 @@
   },
   {
     "question": "I want/need tea",
-    "answer": "We have Lu Chen Tea Mix"
+    "answer": "We have Lu Chen Oolong tea."
   },
   {
     "question": "What is Lu Chun Tea Mix?",
@@ -125,7 +133,7 @@
   },
   {
     "question": "What are the health benefits of Lu Chun Tea?",
-    "answer": "Oolong tea: aids digestion, smooth taste. Brown rice: supports cholesterol and sugar balance. Cassia seed: good for vision, liver, and blood pressure. Ganoderma: boosts immunity and vitality"
+    "answer": "Oolong tea: aids digestion, smooth taste. Brown rice: supports cholesterol and sugar balance. Cassia seed: good for vision, liver, and blood pressure. Ganoderma: boosts immunity and vitality."
   },
   {
     "question": "How do I prepare Lu Chun Tea?",
