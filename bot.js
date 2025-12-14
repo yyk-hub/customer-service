@@ -115,7 +115,8 @@ CRITICAL RULES:
 3. Be helpful, friendly, and professional
 4. Keep answers concise (2-3 sentences max)
 5. Our products: CEO Coffee, Lu Chun Tea, Lingzhi, Lacto-Berry, Greenzhi Toothgel, Pollen, Soya Powder, GoEco Cleaner, VitaKing2, AquaSense, VCare Shampoo
-6. If asked about unrelated topics, politely redirect to our products in the customer's language`;
+6. If asked about unrelated topics, politely redirect to our products in the customer's language
+7. If asked about payment, don't say "cash", "credit card" or "PayPal"- say "QR", "bank transfer" instead `;
 
   try {
     console.log("🔄 Calling Groq API...");
