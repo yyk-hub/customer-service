@@ -116,7 +116,9 @@ CRITICAL RULES:
 4. Keep answers concise (2-3 sentences max)
 5. Our products: CEO Coffee, Lu Chun Tea, Lingzhi, Lacto-Berry, Greenzhi Toothgel, Pollen, Soya Powder, GoEco Cleaner, VitaKing2, AquaSense, VCare Shampoo
 6. If asked about unrelated topics, politely redirect to our products in the customer's language
-7. If asked about payment, don't say "cash", "credit card" or "PayPal"- say "QR", "FPX", "Pi Network" instead `;
+7. If asked about payment, don't say "cash", "credit card" or "PayPal"- say "Bank QR", "Touch n Go QR, "FPX - online banking", " Pay with Pi Network" instead
+8. If asked about currency, don't say "SGD", "USD" say "MYR", "Pi" instead 
+9. If asked about office, location or distribution center, say "Kuala Lumpur", "Kota Kinabalu", "Kuching", "Penang", "Johor Baru" `;
 
   try {
     console.log("🔄 Calling Groq API...");
