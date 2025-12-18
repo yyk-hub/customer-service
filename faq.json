@@ -5,7 +5,15 @@
   },
   {
     "question": "What is your company Terms of service?",
-    "answer": "Our Terms of Service can be found on our official website. Please visit our website at https://ceo-9xi.pages.dev/ and click on the Terms of Service's link at the bottom of the page. If you have any further question, feel free to contact us via Whatsapp."
+    "answer": "Please visit our website at https://ceo-9xi.pages.dev/ and click on link at the bottom of the page."
+  },
+    {
+    "question": "What is your company's Privacy Policy?",
+    "answer": "Our Private Policy is displayed at the footnote. Please visit our website at https://ceo-9xi.pages.dev/ and click on the link at the bottom of the page."
+  },
+  {
+    "question": "How to view, edit or print my order?",
+    "answer": "Go to Menu page and tap on the top right button. Select Order History, you can view, edit and print your order."
   },
   {
     "question": "How to join membership?",
@@ -20,16 +28,16 @@
     "answer": "We are selling premium Coffee, Oolong Tea, Quality Lingzhi products, special Lacto Berry, Nutrition for bone, joint and skin, Toothpaste, Bee Pollen, Soya Powder, Kitchen / Floor Cleaner, Face Cleanser, Shampoo etc."
   },
   {
-    "question": "Do you accept crypto or digital currency?",
-    "answer": "We accept Pi digital currency - It is instant and secure through Pi Browser."
+    "question": "Do you accept crypto, digital currency or Pi Network?",
+    "answer": "We accept Pi digital currency via Pi Network - It is instant and secure through Pi Browser."
   },
   {
-    "question": "What type of currencies you accept?",
-    "answer": "We accept Malaysia Ringgit (MYR) and Pi digital currency through Pi Browser."
+    "question": "What currencies you accept for payment?",
+    "answer": "We accept Malaysia Ringgit (MYR) via QR - online banking and TNG ewallet, and Pi digital currency through Pi Browser."
   },
    {
-    "question": "How do I pay?",
-    "answer": "Use payment method via QR, FPX and Pi Network. Kindly read User's Guide in the Menu page."
+    "question": "How do/can I pay?",
+    "answer": "Use payment method via QR - FPX-online banking and TNG ewallet, or Pay with Pi wallet via Pi Browser. Kindly read User's Guide in the Menu page."
   },
   {
     "question": "How to use the App ?",
