@@ -85,14 +85,14 @@
   },
   {
    "question": "Where is CEO Coffee/cafe made?",
-    "answer" : "CEO Coffee is proudly produced in Malaysia by Shuang Hor / 313 Ehub Enterprise."
+    "answer" : "CEO Coffee is proudly make in Malaysia."
   },
   {
     "question": "Where to buy CEO Coffee/cafe?",
     "answer": "Buy conveniently from CEO shop via online."
   },
   {
-    "question": "Who is CEO Coffee/cafe best suited for?",
+    "question": "Who is suitable for CEO Coffee/cafe?",
     "answer": "Professionals who need a quick yet functional coffee.Health-conscious coffee lovers who want the benefits of Lingzhi.Muslim consumers seeking a Halal-certified coffee option."
   },
   {
@@ -100,8 +100,8 @@
     "answer": "Caffeine is a natural compound in coffee, tea, and chocolate. It helps boost energy, alertness, and mood when enjoyed in moderation."
   },
   {
-    "question": "Is Trans fat in coffee harmful?",
-    "answer": "Yes. Trans fat can raise bad cholesterol and harm heart health. CEO Coffee avoids these unhealthy fats."
+    "question": "Does CEO coffee contain Trans fat?",
+    "answer": "No. Trans fat can raise bad cholesterol and harm heart health. CEO Coffee doesn't contain unhealthy fats."
   },
   {
     "question": "Does coffee cause osteoporosis?",
@@ -181,7 +181,7 @@
   },
   {
     "question": "What are your business hours?",
-    "answer": "Our support team is available 24/7 to assist you."
+    "answer": "You can order 24 hours, 7 days a week. Our customer service can assist in normal working hours."
   },
   {
     "question": "Where are you located?",
@@ -286,7 +286,7 @@
     "answer": "Generally yes — it’s marketed as an all-purpose cleaner, usable on kitchen surfaces, floors, and other washable areas."
   },
    {
-    "question": "How do I use the GoEco All-Purpose Cleaner?",
+    "question": "How to use the GoEco All-Purpose Cleaner?",
     "answer": "For regular cleaning: dilute 1 part GoEco with 5–10 parts water. For very greasy or stubborn areas: dilute 1 part GoEco with 3 parts water. For mopping floors: use 1 capful in 10–20 L of water."
   },
   {
@@ -294,7 +294,7 @@
     "answer": "Yes — GoEco says it’s non-corrosive, and in tests, it didn’t damage aluminum foil, which suggests it’s gentle even with prolonged contact."
   },
   {
-    "question": "Can I safely use GoEco in homes with pets or children?",
+    "question": "Can I use GoEco in homes with pets or children?",
     "answer": "Yes — the gentle, non-toxic formula and biodegradable nature make it a safer choice for households with sensitive populations."
   },
   {
@@ -354,7 +354,7 @@
     "answer": "People experiencing joint discomfort or ageing-related collagen loss. Middle-aged or elderly people. Active individuals who want to support mobility."
   },
   {
-    "question": "How soon will I see results of taking VitaKing2?",
+    "question": "How soon to see results of taking VitaKing2?",
     "answer": "Like many collagen supplements, results may take time. Benefits such as better joint feel or skin improvement usually come from consistent use over weeks to months."
   },
   {
