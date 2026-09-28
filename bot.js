@@ -168,7 +168,9 @@ CRITICAL RULES:
 // ==========================
 app.post("/api/chat", async (req, res) => {
   const { message } = req.body;
-  const ip = req.headers["x-forwarded-for"] || req.ip;
+  const ip = (req.headers["x-forwarded-for"] || req.ip)
+  .split(",")[0]
+  .trim();
 
   if (!message) {
     return res.json({ reply: "No message received." });
