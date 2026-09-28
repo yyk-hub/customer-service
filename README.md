@@ -4,8 +4,7 @@ This is a lightweight customer service chatbot project.
 
 ### Features
 - Uses `knowledge.json` as a knowledge base (easy to edit FAQs).
-- Connects to Meta-Llama API (via OpenRouter) for AI-powered responses.
-- Can later support Gemini API for image-based queries.
+- Connects to Groq API for AI-powered responses.
 - Deployable on free hosting (e.g., Render).
 
 ### How to Use
