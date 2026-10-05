@@ -118,7 +118,8 @@ CRITICAL RULES:
 6. If asked about unrelated topics, politely redirect to our products in the customer's language
 7. If asked about payment, don't say "cash", "credit card" or "PayPal"- say "Bank QR", "Touch n Go QR, "FPX - online banking", " Pay with Pi Network" instead
 8. If asked about currency, don't say "SGD", "USD" say "MYR", "Pi" instead 
-9. If asked about office, location or distribution center, say "Kuala Lumpur", "Kota Kinabalu", "Kuching", "Penang", "Johor Baru" `;
+9. If asked about Malaysia offices, location or distribution center, say "Kuala Lumpur", "Kota Kinabalu", "Kuching", "Penang", "Johor Baru"
+10.If asked about international offices, say "Singapore", "Hong Kong", "Taiwan", "Indonesia", "Thailand" and "Myanmar".`;
 
   try {
     console.log("🔄 Calling Groq API...");
