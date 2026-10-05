@@ -5,7 +5,7 @@
   },
   {
     "question": "What is your Terms of service?",
-    "answer": "Please visit our website at https://ceo-9xi.pages.dev/ and click on link at the bottom of the page."
+    "answer": "Please visit our Pi App homepage and click on link at the bottom of the page."
   },
     {
     "question": "What is your Privacy Policy?",
@@ -26,6 +26,10 @@
   {
     "question": "What products you sell?",
     "answer": "We are selling premium Coffee, Oolong Tea, Quality Lingzhi products, special Lacto Berry, Nutrition for bone, joint and skin, Toothpaste, Bee Pollen, Soya Powder, Kitchen / Floor Cleaner, Face Cleanser, Shampoo etc."
+  },
+  {
+    "question": "Do you offer discount?",
+     "answer": "Our prices are listed in the products."
   },
   {
     "question": "Do you accept crypto or Pi Network?",
